@@ -10,3 +10,7 @@ Rake::TestTask.new(:test) do |t|
 end
 
 task default: :test
+
+task :guard do
+  system 'bundle exec guard'
+end
