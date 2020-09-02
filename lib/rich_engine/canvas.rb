@@ -1,0 +1,39 @@
+# frozen_string_literal: true
+
+class Canvas
+  attr_reader :canvas
+
+  def initialize(width, height)
+    @width = width
+    @height = height
+    @canvas = init_canvas
+  end
+
+  def dimentions
+    [@width, @height]
+  end
+
+  def write_string(str, x:, y:)
+    str.each_char.with_index do |char, i|
+      @canvas[at(x + i, y)] = char
+    end
+  end
+
+  def []=(x, y, value)
+    @canvas[at(x, y)] = value
+  end
+
+  private
+
+  def [](x, y)
+    @canvas[at(x, y)]
+  end
+
+  def at(x, y)
+    y * @width + x
+  end
+
+  def init_canvas
+    (0...(@width * @height)).map { ' ' }
+  end
+end
