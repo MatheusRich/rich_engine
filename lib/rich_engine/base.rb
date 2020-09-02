@@ -20,9 +20,11 @@ module RichEngine
       @width = width
       @height = height
       @active = true
+      @io = IO.new(width, height)
+      @canvas = Canvas.new(width, height)
     end
 
-    def self.play(width = 80, height = 30)
+    def self.play(width = 50, height = 10)
       new(width, height).play
     end
 
@@ -30,22 +32,22 @@ module RichEngine
       raise NotImplementedError
     end
 
-    def on_update(_elapsed_time)
+    def on_update(_elapsed_time, _key)
       raise NotImplementedError
     end
 
     def play
       on_create
 
-      t1 = Time.now
+      previous_time = Time.now
 
       while active
-        t2 = Time.now
-        elapsed_time = t2 - t1
-        t1 = t2
+        current_time = Time.now
+        elapsed_time = current_time - previous_time
+        previous_time = current_time
 
-        handle_keyboard
-        on_update(elapsed_time) || deactivate!
+        key = process_input
+        on_update(elapsed_time, key) || deactivate!
         render
       end
     end
@@ -58,12 +60,12 @@ module RichEngine
       @active = false
     end
 
-    def handle_keyboard
-      sleep 0.1
+    def process_input
+      @io.read_async
     end
 
     def render
-      puts 'rendering...'
+      @io.write(@canvas.canvas)
     end
   end
 end
