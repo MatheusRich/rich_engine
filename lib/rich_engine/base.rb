@@ -25,7 +25,7 @@ module RichEngine
     end
 
     def self.play(width = 50, height = 10)
-      new(width, height).play
+      new(width, height).send(:play)
     end
 
     def on_create
@@ -36,12 +36,18 @@ module RichEngine
       raise NotImplementedError
     end
 
+    def write_string(...)
+      @canvas.write_string(...)
+    end
+
+    private
+
     def play
       on_create
 
       previous_time = Time.now
 
-      while active
+      while @active
         current_time = Time.now
         elapsed_time = current_time - previous_time
         previous_time = current_time
@@ -51,10 +57,6 @@ module RichEngine
         render
       end
     end
-
-    private
-
-    attr_reader :active
 
     def deactivate!
       @active = false
