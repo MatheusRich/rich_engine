@@ -28,11 +28,11 @@ GEM
     listen (3.2.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    lumberjack (1.2.7)
+    lumberjack (1.2.8)
     maruku (0.7.3)
     method_source (1.0.0)
     mini_portile2 (2.4.0)
-    minitest (5.14.1)
+    minitest (5.14.2)
     minitest-reporters (1.4.2)
       ansi
       builder
@@ -51,7 +51,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     rainbow (3.0.0)
-    rake (12.3.2)
+    rake (13.0.1)
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -59,7 +59,7 @@ GEM
     reverse_markdown (2.0.0)
       nokogiri
     rexml (3.2.4)
-    rubocop (0.89.1)
+    rubocop (0.90.0)
       parallel (~> 1.10)
       parser (>= 2.7.1.1)
       rainbow (>= 2.2.2, < 4.0)
@@ -78,7 +78,7 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
     simplecov-html (0.12.2)
-    solargraph (0.39.14)
+    solargraph (0.39.15)
       backport (~> 1.1)
       benchmark
       bundler (>= 1.17.2)
