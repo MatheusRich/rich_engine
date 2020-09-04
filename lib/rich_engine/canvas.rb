@@ -23,6 +23,10 @@ class Canvas
     @canvas[at(x, y)] = value
   end
 
+  def clear
+    init_canvas
+  end
+
   private
 
   def [](x, y)
