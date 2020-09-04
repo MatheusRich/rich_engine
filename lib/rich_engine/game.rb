@@ -3,7 +3,7 @@
 module RichEngine
   # Example:
   #
-  #    class MyGame < RichEngine::Base
+  #    class MyGame < RichEngine::Game
   #      def on_create
   #        @timer = Timer.new
   #      end
