@@ -15,7 +15,7 @@ module RichEngine
   #
   #    MyGame.play
   #
-  class Base
+  class Game
     def initialize(width, height)
       @width = width
       @height = height
