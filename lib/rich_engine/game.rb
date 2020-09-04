@@ -23,8 +23,8 @@ module RichEngine
       @width = width
       @height = height
       @active = true
-      @io = IO.new(width, height)
-      @canvas = Canvas.new(width, height)
+      @io = RichEngine::IO.new(width, height)
+      @canvas = RichEngine::Canvas.new(width, height)
     end
 
     def self.play(width = 50, height = 10)
