@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'rich_engine'
   spec.version       = RichEngine::VERSION
   spec.authors       = ['Matheus Richard']
-  spec.email         = ['matheus.richard@fretadao.com.br']
+  spec.email         = ['matheusrichardt@gmail.com']
 
   spec.summary       = 'A Ruby game engine'
   spec.homepage      = 'https://github.com/MatheusRich/rich_engine'
