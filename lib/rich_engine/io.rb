@@ -44,8 +44,6 @@ module RichEngine
 
     def clear_screen
       "\e[2J\e[f"
-      # $stdin.erase_screen
-      @clear_screen ||= "\r#{"\e[A\e[K" * 3}" * @height
     end
 
     def symbolize_char(char)
