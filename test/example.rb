@@ -2,7 +2,7 @@
 
 require 'rich_engine'
 
-class MyGame < RichEngine::Base
+class MyGame < RichEngine::Game
   def on_create
     @timer = RichEngine::Timer.new
   end
