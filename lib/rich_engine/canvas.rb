@@ -6,7 +6,7 @@ class Canvas
   def initialize(width, height)
     @width = width
     @height = height
-    @canvas = init_canvas
+    @canvas = blank_canvas
   end
 
   def dimentions
@@ -24,7 +24,7 @@ class Canvas
   end
 
   def clear
-    @canvas = init_canvas
+    @canvas = blank_canvas
   end
 
   private
@@ -37,7 +37,7 @@ class Canvas
     y * @width + x
   end
 
-  def init_canvas
-    (0...(@width * @height)).map { ' ' }
+  def blank_canvas
+    @blank_canvas ||= (0...(@width * @height)).map { ' ' }
   end
 end
