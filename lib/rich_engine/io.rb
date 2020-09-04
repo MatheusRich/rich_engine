@@ -18,17 +18,17 @@ module RichEngine
 
         i += @width
       end
-      puts clear_screen + output
+
+      puts "#{clear_screen}#{output}"
     end
 
     def read_async
-      system('stty raw -echo')
-      char = begin
-               $stdin.read_nonblock(4)
-             rescue StandardError
-               nil
-             end
-      system('stty -raw echo')
+      char = ''
+      $stdin.raw do |io|
+        char = io.read_nonblock(4)
+      rescue StandardError
+        char = nil
+      end
       print "\r\e[J"
 
       return nil if char.nil?
@@ -43,6 +43,8 @@ module RichEngine
     end
 
     def clear_screen
+      "\e[2J\e[f"
+      # $stdin.erase_screen
       @clear_screen ||= "\r#{"\e[A\e[K" * 3}" * @height
     end
 
