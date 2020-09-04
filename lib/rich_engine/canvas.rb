@@ -39,7 +39,7 @@ module RichEngine
     end
 
     def blank_canvas
-      @blank_canvas ||= (0...(@width * @height)).map { ' ' }
+      (0...(@width * @height)).map { ' ' }
     end
   end
 end
