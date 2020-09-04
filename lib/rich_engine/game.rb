@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require_relative 'canvas'
+require_relative 'io'
+
 module RichEngine
   # Example:
   #

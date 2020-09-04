@@ -1,43 +1,45 @@
 # frozen_string_literal: true
 
-class Canvas
-  attr_reader :canvas
+module RichEngine
+  class Canvas
+    attr_reader :canvas
 
-  def initialize(width, height)
-    @width = width
-    @height = height
-    @canvas = blank_canvas
-  end
-
-  def dimentions
-    [@width, @height]
-  end
-
-  def write_string(str, x:, y:)
-    str.each_char.with_index do |char, i|
-      @canvas[at(x + i, y)] = char
+    def initialize(width, height)
+      @width = width
+      @height = height
+      @canvas = blank_canvas
     end
-  end
 
-  def []=(x, y, value)
-    @canvas[at(x, y)] = value
-  end
+    def dimentions
+      [@width, @height]
+    end
 
-  def clear
-    @canvas = blank_canvas
-  end
+    def write_string(str, x:, y:)
+      str.each_char.with_index do |char, i|
+        @canvas[at(x + i, y)] = char
+      end
+    end
 
-  private
+    def []=(x, y, value)
+      @canvas[at(x, y)] = value
+    end
 
-  def [](x, y)
-    @canvas[at(x, y)]
-  end
+    def clear
+      @canvas = blank_canvas
+    end
 
-  def at(x, y)
-    y * @width + x
-  end
+    private
 
-  def blank_canvas
-    @blank_canvas ||= (0...(@width * @height)).map { ' ' }
+    def [](x, y)
+      @canvas[at(x, y)]
+    end
+
+    def at(x, y)
+      y * @width + x
+    end
+
+    def blank_canvas
+      @blank_canvas ||= (0...(@width * @height)).map { ' ' }
+    end
   end
 end
