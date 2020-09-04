@@ -24,7 +24,7 @@ class Canvas
   end
 
   def clear
-    init_canvas
+    @canvas = init_canvas
   end
 
   private
