@@ -4,9 +4,10 @@ module RichEngine
   class Canvas
     attr_reader :canvas
 
-    def initialize(width, height)
+    def initialize(width, height, canvas_bg: ' ')
       @width = width
       @height = height
+      @canvas_bg = canvas_bg
       @canvas = blank_canvas
     end
 
@@ -39,7 +40,7 @@ module RichEngine
     end
 
     def blank_canvas
-      (0...(@width * @height)).map { ' ' }
+      (0...(@width * @height)).map { @canvas_bg }
     end
   end
 end
