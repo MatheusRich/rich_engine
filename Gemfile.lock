@@ -38,6 +38,8 @@ GEM
     method_source (1.0.0)
     mini_portile2 (2.4.0)
     minitest (5.14.2)
+    minitest-focus (1.2.1)
+      minitest (>= 4, < 6)
     minitest-reporters (1.4.2)
       ansi
       builder
@@ -109,6 +111,7 @@ DEPENDENCIES
   guard
   guard-minitest
   minitest
+  minitest-focus
   minitest-reporters
   rake
   rich_engine!
