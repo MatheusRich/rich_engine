@@ -39,10 +39,6 @@ module RichEngine
       raise NotImplementedError
     end
 
-    def write_string(...)
-      @canvas.write_string(...)
-    end
-
     private
 
     def play

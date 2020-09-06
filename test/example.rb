@@ -11,7 +11,7 @@ class MyGame < RichEngine::Game
     game_over = key == :q
 
     @timer.update(elapsed_time)
-    write_string("Elapsed: #{@timer.get.round(1)}s", x: 1, y: 1)
+    @canvas.write_string("Elapsed: #{@timer.get.round(1)}s", x: 1, y: 1)
     game_over = true if @timer.get > 10
 
     !game_over
