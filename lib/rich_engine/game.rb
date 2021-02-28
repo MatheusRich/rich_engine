@@ -46,19 +46,16 @@ module RichEngine
 
       previous_time = Time.now
 
-      while @active
+      loop do
         current_time = Time.now
         elapsed_time = current_time - previous_time
         previous_time = current_time
 
         key = process_input
-        on_update(elapsed_time, key) || deactivate!
-        render
-      end
-    end
+        should_keep_playing = on_update(elapsed_time, key)
 
-    def deactivate!
-      @active = false
+        break unless should_keep_playing
+      end
     end
 
     def process_input
