@@ -28,7 +28,7 @@ module RichEngine
     end
 
     def self.play(width = 50, height = 10)
-      new(width, height).send(:play)
+      new(width, height).play
     end
 
     def on_create
@@ -38,8 +38,6 @@ module RichEngine
     def on_update(_elapsed_time, _key)
       raise NotImplementedError
     end
-
-    private
 
     def play
       on_create
@@ -57,6 +55,8 @@ module RichEngine
         break unless should_keep_playing
       end
     end
+
+    private
 
     def process_input
       @io.read_async
