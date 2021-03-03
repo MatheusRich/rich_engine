@@ -11,6 +11,7 @@ module RichEngine
     end
 
     def write(canvas)
+      `tput civis`
       i = 0
       output = ''
       while i < canvas_size
@@ -20,6 +21,7 @@ module RichEngine
       end
 
       puts "#{clear_screen}#{output}"
+      `tput cnorm`
     end
 
     def read_async
