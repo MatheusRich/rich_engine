@@ -3,13 +3,12 @@
 module RichEngine
   class Canvas
     attr_reader :canvas
-    attr_accessor :bg
 
     def initialize(width, height, bg: ' ')
       @width = width
       @height = height
       @bg = bg
-      @canvas = blank_canvas
+      create_blank_canvas
     end
 
     def dimentions
@@ -17,7 +16,7 @@ module RichEngine
     end
 
     def write_string(str, x:, y:)
-      str.each_char.with_index do |char, i|
+      str.to_s.each_char.with_index do |char, i|
         @canvas[at(x + i, y)] = char
       end
     end
@@ -27,7 +26,13 @@ module RichEngine
     end
 
     def clear
-      @canvas = blank_canvas
+      @canvas = @blank_canvas
+    end
+
+    def bg=(bg)
+      @bg = bg
+
+      create_blank_canvas
     end
 
     private
@@ -40,8 +45,8 @@ module RichEngine
       y * @width + x
     end
 
-    def blank_canvas
-      (0...(@width * @height)).map { @bg }
+    def create_blank_canvas
+      @blank_canvas = (0...(@width * @height)).map { @bg }
     end
   end
 end
