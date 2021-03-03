@@ -11,17 +11,9 @@ module RichEngine
     end
 
     def write(canvas)
-      `tput civis`
-      i = 0
-      output = ''
-      while i < canvas_size
-        output += "#{canvas[i...(i + @width)].join}\n"
-
-        i += @width
-      end
-
-      puts "#{clear_screen}#{output}"
-      `tput cnorm`
+      move_cursor_to_home
+      output = build_output(canvas)
+      puts output
     end
 
     def read_async
@@ -40,12 +32,25 @@ module RichEngine
 
     private
 
+    def build_output(canvas)
+      output = ''
+
+      i = 0
+      while i < canvas_size
+        output += "#{canvas[i...(i + @width)].join}\n"
+
+        i += @width
+      end
+
+      output
+    end
+
     def canvas_size
       @canvas_size ||= @height * @width
     end
 
-    def clear_screen
-      "\e[2J\e[f"
+    def move_cursor_to_home
+      print "\e[H"
     end
 
     def symbolize_char(char)
