@@ -39,7 +39,12 @@ module RichEngine
       raise NotImplementedError
     end
 
+    def on_destroy
+    end
+
     def play
+      $stdout.clear_screen
+
       on_create
 
       previous_time = Time.now
@@ -49,16 +54,19 @@ module RichEngine
         elapsed_time = current_time - previous_time
         previous_time = current_time
 
-        key = process_input
+        key = read_input
         should_keep_playing = on_update(elapsed_time, key)
 
         break unless should_keep_playing
       end
+
+    ensure
+      on_destroy
     end
 
     private
 
-    def process_input
+    def read_input
       @io.read_async
     end
 
