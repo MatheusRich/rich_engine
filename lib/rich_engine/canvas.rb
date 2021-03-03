@@ -3,6 +3,7 @@
 module RichEngine
   class Canvas
     attr_reader :canvas
+    attr_accessor :bg
 
     def initialize(width, height, bg: ' ')
       @width = width
