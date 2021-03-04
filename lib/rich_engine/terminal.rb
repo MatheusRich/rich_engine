@@ -1,17 +1,21 @@
+# frozen_string_literal: true
+
+require_relative 'terminal/cursor'
+
 module RichEngine
   module Terminal
-    extend self
+    module_function
 
     def clear
       $stdout.clear_screen
     end
 
     def hide_cursor
-      system("tput civis")
+      Cursor.hide
     end
 
     def display_cursor
-      system("tput cnorm")
+      Cursor.display
     end
 
     def disable_echo
