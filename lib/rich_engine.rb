@@ -9,5 +9,4 @@ require_relative 'rich_engine/terminal'
 require_relative 'rich_engine/version'
 
 module RichEngine
-  class Error < StandardError; end
 end
