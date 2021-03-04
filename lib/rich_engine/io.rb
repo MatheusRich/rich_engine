@@ -57,35 +57,21 @@ module RichEngine
       return char.downcase.to_sym unless char.start_with? "\e"
 
       case char
-      when "\e[A"
-        char = :up
-      when "\e[B"
-        char = :down
-      when "\e[C"
-        char = :right
-      when "\e[D"
-        char = :left
-      when "\e"
-        char = :esc
-      when " "
-        char = :space
-      when "\e[2~"
-        char = :insert
-      when "\e[3~"
-        char = :delete
-      when "\e[5~"
-        char = :pg_up
-      when "\e[6~"
-        char = :pg_down
-      when "\e[H"
-        char = :home
-      when "\e[F"
-        char = :end
+      when "\e[A"  then :up
+      when "\e[B"  then :down
+      when "\e[C"  then :right
+      when "\e[D"  then :left
+      when "\e"    then :esc
+      when " "     then :space
+      when "\e[2~" then :insert
+      when "\e[3~" then :delete
+      when "\e[5~" then :pg_up
+      when "\e[6~" then :pg_down
+      when "\e[H"  then :home
+      when "\e[F"  then :end
       else
-        raise "Unknown char #{char.inspect}"
+        raise "Unknown char #{char.inspect}" if ENV["DEBUG"]
       end
-
-      char
     end
   end
 end
