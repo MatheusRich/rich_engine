@@ -11,23 +11,30 @@ module RichEngine
     end
 
     def write(canvas)
-      move_cursor_to_home
+      Terminal::Cursor.go(:home)
       output = build_output(canvas)
       puts output
     end
 
     def read_async
-      char = ''
       $stdin.raw do |io|
-        char = io.read_nonblock(4)
-      rescue StandardError
-        char = nil
+        key = $stdin.read_nonblock(2)
+        c, c2 = key.chars
+
+        if c2 && csi?(key)
+          c3, c4 = $stdin.read_nonblock(2).chars
+
+          if digit?(c3)
+            symbolize_key(key + c3 + c4)
+          else
+            symbolize_key(key + c3)
+          end
+        else
+          symbolize_key(key)
+        end
+      rescue ::IO::WaitReadable
+        nil
       end
-      print "\r\e[J"
-
-      return nil if char.nil?
-
-      symbolize_char(char)
     end
 
     private
@@ -49,14 +56,10 @@ module RichEngine
       @canvas_size ||= @height * @width
     end
 
-    def move_cursor_to_home
-      print "\e[H"
-    end
+    def symbolize_key(key)
+      return key.downcase.to_sym unless key.start_with?("\e", " ")
 
-    def symbolize_char(char)
-      return char.downcase.to_sym unless char.start_with? "\e"
-
-      case char
+      case key
       when "\e[A"  then :up
       when "\e[B"  then :down
       when "\e[C"  then :right
@@ -69,9 +72,20 @@ module RichEngine
       when "\e[6~" then :pg_down
       when "\e[H"  then :home
       when "\e[F"  then :end
-      else
-        raise "Unknown char #{char.inspect}" if ENV["DEBUG"]
+      else raise "Unknown key #{key.inspect}" if ENV["DEBUG"] == 'all'
       end
+    end
+
+    def escape?(char)
+      char == "\e"
+    end
+
+    def csi?(str)
+      str == "\e["
+    end
+
+    def digit?(char)
+      ("0".."9").include?(char)
     end
   end
 end
