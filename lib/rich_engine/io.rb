@@ -54,17 +54,35 @@ module RichEngine
     end
 
     def symbolize_char(char)
-      char = char.to_sym
+      return char.downcase.to_sym unless char.start_with? "\e"
 
       case char
-      when :"\e[A"
+      when "\e[A"
         char = :up
-      when :"\e[B"
+      when "\e[B"
         char = :down
-      when :"\e[C"
+      when "\e[C"
         char = :right
-      when :"\e[D"
+      when "\e[D"
         char = :left
+      when "\e"
+        char = :esc
+      when " "
+        char = :space
+      when "\e[2~"
+        char = :insert
+      when "\e[3~"
+        char = :delete
+      when "\e[5~"
+        char = :pg_up
+      when "\e[6~"
+        char = :pg_down
+      when "\e[H"
+        char = :home
+      when "\e[F"
+        char = :end
+      else
+        raise "Unknown char #{char.inspect}"
       end
 
       char
