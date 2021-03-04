@@ -2,6 +2,10 @@ module RichEngine
   module Terminal
     extend self
 
+    def clear
+      $stdout.clear_screen
+    end
+
     def hide_cursor
       system("tput civis")
     end
