@@ -8,14 +8,14 @@ module RichEngine
       @width = width
       @height = height
       @bg = bg
-      create_blank_canvas
+      @canvas = create_blank_canvas
     end
 
     def dimentions
       [@width, @height]
     end
 
-    def write_string(str, x:, y:)
+    def write_string(str, x: 0, y: 0)
       str.to_s.each_char.with_index do |char, i|
         @canvas[at(x + i, y)] = char
       end
