@@ -11,6 +11,10 @@ module RichEngine
         send("on_#{color}")
       end
 
+      def transparent
+        gsub(/./, ' ')
+      end
+
       def black
         color(30)
       end
