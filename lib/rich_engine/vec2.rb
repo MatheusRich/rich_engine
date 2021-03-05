@@ -31,8 +31,8 @@ module RichEngine
     end
 
     def fill(x:, y:, with:)
-      xs = make_iterable(x)
-      ys = make_iterable(y)
+      xs = Iterable(x)
+      ys = Iterable(y)
 
       xs.each do |x|
         ys.each do |y|
@@ -43,7 +43,7 @@ module RichEngine
 
     private
 
-    def make_iterable(value)
+    def Iterable(value)
       value.respond_to?(:each) ? value : [value]
     end
   end
