@@ -35,6 +35,7 @@ module RichEngine
       new_vec2.vec = @vec.map.with_index do |row, i|
         row.map.with_index { |value, j| [value, other[i, j]] }
       end
+
       new_vec2
     end
 

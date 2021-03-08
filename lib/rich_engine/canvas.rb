@@ -21,6 +21,8 @@ module RichEngine
       end
     end
 
+    # TODO: Add `[](x,y)`
+
     def []=(x, y, value)
       @canvas[at(x, y)] = value
     end
@@ -33,6 +35,7 @@ module RichEngine
       @bg = bg
 
       create_blank_canvas
+      # NOTE: Should I run `clear` too?
     end
 
     private
