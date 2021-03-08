@@ -11,6 +11,8 @@ module RichEngine
         send("on_#{color}")
       end
 
+      # Colors
+
       def transparent
         gsub(/./, ' ')
       end
@@ -27,7 +29,7 @@ module RichEngine
         color(32)
       end
 
-      def brown
+      def yellow
         color(33)
       end
 
@@ -47,6 +49,40 @@ module RichEngine
         color(37)
       end
 
+      def bright_black
+        color(90)
+      end
+
+      def bright_red
+        color(91)
+      end
+
+      def bright_green
+        color(92)
+      end
+
+      def bright_yellow
+        color(93)
+      end
+
+      def bright_blue
+        color(94)
+      end
+
+      def bright_magenta
+        color(95)
+      end
+
+      def bright_cyan
+        color(96)
+      end
+
+      def bright_white
+        color(97)
+      end
+
+      # Background colors
+
       def on_transparent
         color(49)
       end
@@ -63,7 +99,7 @@ module RichEngine
         color(42)
       end
 
-      def on_brown
+      def on_yellow
         color(43)
       end
 
@@ -86,6 +122,40 @@ module RichEngine
       def on_transparent
         color(49)
       end
+
+      def on_bright_black
+        color(100)
+      end
+
+      def on_bright_red
+        color(101)
+      end
+
+      def on_bright_green
+        color(102)
+      end
+
+      def on_bright_yellow
+        color(103)
+      end
+
+      def on_bright_blue
+        color(104)
+      end
+
+      def on_bright_magenta
+        color(105)
+      end
+
+      def on_bright_cyan
+        color(106)
+      end
+
+      def on_bright_white
+        color(107)
+      end
+
+      # STYLES
 
       def bold
         "\e[1m#{self}\e[22m"
