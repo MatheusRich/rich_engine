@@ -85,7 +85,7 @@ module RichEngine
     end
 
     def digit?(char)
-      ("0".."9").include?(char)
+      char.between?('0', '9')
     end
   end
 end
