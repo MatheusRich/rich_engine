@@ -83,10 +83,6 @@ module RichEngine
 
       # Background colors
 
-      def on_transparent
-        color(49)
-      end
-
       def on_black
         color(40)
       end
