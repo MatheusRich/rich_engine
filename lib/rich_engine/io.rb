@@ -57,7 +57,7 @@ module RichEngine
     end
 
     def symbolize_key(key)
-      return key.downcase.to_sym unless key.start_with?("\e", " ")
+      return key.downcase.to_sym unless key.start_with?("\e", " ", "\n")
 
       case key
       when "\e[A"  then :up
@@ -66,6 +66,7 @@ module RichEngine
       when "\e[D"  then :left
       when "\e"    then :esc
       when " "     then :space
+      when "\n"    then :enter
       when "\e[2~" then :insert
       when "\e[3~" then :delete
       when "\e[5~" then :pg_up
