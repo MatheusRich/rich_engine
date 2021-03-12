@@ -19,7 +19,7 @@ module RichEngine
     def read_async
       $stdin.raw do |io|
         key = $stdin.read_nonblock(2)
-        c, c2 = key.chars
+        _c1, c2 = key.chars
 
         if c2 && csi?(key)
           c3, c4 = $stdin.read_nonblock(2).chars
