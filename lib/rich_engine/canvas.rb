@@ -19,16 +19,19 @@ module RichEngine
       [@width, @height]
     end
 
-    def write_string(str, x: 0, y: 0, bg_colors: nil)
+    def write_string(str, x: 0, y: 0, fg: :white, bg: :transparent)
+      fg = Array(fg).cycle
+      bg = Array(bg).cycle
+
       str.to_s.each_char.with_index do |char, i|
-        self[x + i, y] = bg_colors ? char.bg(bg_colors[i]) : char
+        self[x + i, y] = char.fg(fg.next).bg(bg.next)
       end
     end
 
     def draw_rect(x:, y:, width:, height:, char: '█', color: :white)
-      (x..(x + width - 1)).each do |x|
-        (y..(y + height - 1)).each do |y|
-          self[x, y] = char.fg(color)
+      (x..(x + width - 1)).each do |x_pos|
+        (y..(y + height - 1)).each do |y_pos|
+          self[x_pos, y_pos] = char.fg(color)
         end
       end
     end
