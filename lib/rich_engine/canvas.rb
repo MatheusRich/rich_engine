@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require_relative "string_colors"
+
 module RichEngine
   class Canvas
+    using StringColors
+
     attr_reader :canvas
 
     def initialize(width, height, bg: ' ')
@@ -15,9 +19,17 @@ module RichEngine
       [@width, @height]
     end
 
-    def write_string(str, x: 0, y: 0)
+    def write_string(str, x: 0, y: 0, bg_colors: nil)
       str.to_s.each_char.with_index do |char, i|
-        @canvas[at(x + i, y)] = char
+        self[x + i, y] = bg_colors ? char.bg(bg_colors[i]) : char
+      end
+    end
+
+    def draw_rect(x:, y:, width:, height:, char: '█', color: :white)
+      (x..(x + width - 1)).each do |x|
+        (y..(y + height - 1)).each do |y|
+          self[x, y] = char.fg(color)
+        end
       end
     end
 
