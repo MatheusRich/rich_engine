@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'rich_engine/canvas'
+require_relative 'rich_engine/chance'
 require_relative 'rich_engine/cooldown'
 require_relative 'rich_engine/enum'
 require_relative 'rich_engine/game'
