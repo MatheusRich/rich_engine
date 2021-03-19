@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module RichEngine
-  class Vec2
+  class Matrix
     attr_accessor :vec
 
     def initialize(width: 1, height: 1, fill_with: nil)
@@ -31,12 +31,12 @@ module RichEngine
     end
 
     def zip(other)
-      new_vec2 = Vec2.new
-      new_vec2.vec = @vec.map.with_index do |row, i|
+      new_matrix = Matrix.new
+      new_matrix.vec = @vec.map.with_index do |row, i|
         row.map.with_index { |value, j| [value, other[i, j]] }
       end
 
-      new_vec2
+      new_matrix
     end
 
     def each_with_indexes

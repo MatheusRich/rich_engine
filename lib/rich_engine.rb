@@ -8,7 +8,7 @@ require_relative 'rich_engine/game'
 require_relative 'rich_engine/string_colors'
 require_relative 'rich_engine/terminal'
 require_relative 'rich_engine/timer'
-require_relative 'rich_engine/vec2'
+require_relative 'rich_engine/matrix'
 require_relative 'rich_engine/version'
 
 module RichEngine
