@@ -22,6 +22,6 @@ module RichEngine
     def finished?
       @timer >= @target_time
     end
-    alias ready? finished?
+    alias_method :ready?, :finished?
   end
 end

@@ -14,7 +14,7 @@ module RichEngine
       # Colors
 
       def transparent
-        gsub(/./, ' ')
+        gsub(/./, " ")
       end
 
       def black

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class EnumTest < Minitest::Test
   def test_that_enum_has_name
@@ -13,10 +13,10 @@ class EnumTest < Minitest::Test
 
   def test_that_enum_has_values
     enum = RichEngine::Enum.new(colors: [:red, :green, :blue])
-    assert_equal({ red: 0, green: 1, blue: 2 }, enum.values)
+    assert_equal({red: 0, green: 1, blue: 2}, enum.values)
 
     enum = RichEngine::Enum.new(directions: [:up, :down, :left, :right])
-    assert_equal({ up: 0, down: 1, left: 2, right: 3 }, enum.values)
+    assert_equal({up: 0, down: 1, left: 2, right: 3}, enum.values)
   end
 
   def test_that_enum_defines_methods_for_each_value
