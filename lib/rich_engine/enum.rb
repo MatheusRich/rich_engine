@@ -1,15 +1,15 @@
 module RichEngine
   class Enum
-    attr_reader :name, :values
+    attr_reader :name, :options
 
     def initialize(hash)
       check_argument_size(hash)
 
       @name = hash.keys.first
-      @values = hash.values.first.map.with_index.to_h
+      @options = hash.values.first.map.with_index.to_h
 
-      @values.each do |k, v|
-        define_singleton_method(k) { v }
+      @options.each do |k, v|
+        define_singleton_method(k) { Enum::Value.new(options: @options.keys, selected: k) }
       end
     end
 

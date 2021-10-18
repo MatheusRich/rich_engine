@@ -11,12 +11,12 @@ class EnumTest < Minitest::Test
     assert_equal(:directions, enum.name)
   end
 
-  def test_that_enum_has_values
+  def test_that_enum_has_options
     enum = RichEngine::Enum.new(colors: [:red, :green, :blue])
-    assert_equal({red: 0, green: 1, blue: 2}, enum.values)
+    assert_equal({red: 0, green: 1, blue: 2}, enum.options)
 
     enum = RichEngine::Enum.new(directions: [:up, :down, :left, :right])
-    assert_equal({up: 0, down: 1, left: 2, right: 3}, enum.values)
+    assert_equal({up: 0, down: 1, left: 2, right: 3}, enum.options)
   end
 
   def test_that_enum_defines_methods_for_each_value
@@ -31,6 +31,22 @@ class EnumTest < Minitest::Test
     assert_equal(2, enum.left)
     assert_equal(3, enum.right)
   end
+
+  # focus
+  # def test_that_enum_defines_query_methods_for_each_value
+  #   enum = RichEngine::Enum.new(colors: [:red, :green, :blue])
+  #   assert enum.red.red?
+  #   assert_not enum.red.green?
+  #   assert_not enum.red.blue?
+
+  #   assert enum.green.green?
+  #   assert_not enum.green.red?
+  #   assert_not enum.green.blue?
+
+  #   assert enum.blue.blue?
+  #   assert_not enum.blue.red?
+  #   assert_not enum.blue.green?
+  # end
 
   def test_that_enum_does_not_define_methods_in_the_base_class
     enum = RichEngine::Enum.new(colors: [:red])
