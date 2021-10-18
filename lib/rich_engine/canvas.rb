@@ -8,7 +8,7 @@ module RichEngine
 
     attr_reader :canvas
 
-    def initialize(width, height, bg: ' ')
+    def initialize(width, height, bg: " ")
       @width = width
       @height = height
       @bg = bg
@@ -28,7 +28,7 @@ module RichEngine
       end
     end
 
-    def draw_rect(x:, y:, width:, height:, char: '█', color: :white)
+    def draw_rect(x:, y:, width:, height:, char: "█", color: :white)
       (x..(x + width - 1)).each do |x_pos|
         (y..(y + height - 1)).each do |y_pos|
           self[x_pos, y_pos] = char.fg(color)

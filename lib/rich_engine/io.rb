@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'timeout'
-require 'io/console'
+require "timeout"
+require "io/console"
 
 module RichEngine
   class IO
@@ -40,7 +40,7 @@ module RichEngine
     private
 
     def build_output(canvas)
-      output = ''
+      output = ""
 
       i = 0
       while i < canvas_size
@@ -60,20 +60,20 @@ module RichEngine
       return key.downcase.to_sym unless key.start_with?("\e", " ", "\n")
 
       case key
-      when "\e[A"  then :up
-      when "\e[B"  then :down
-      when "\e[C"  then :right
-      when "\e[D"  then :left
-      when "\e"    then :esc
-      when " "     then :space
-      when "\n"    then :enter
+      when "\e[A" then :up
+      when "\e[B" then :down
+      when "\e[C" then :right
+      when "\e[D" then :left
+      when "\e" then :esc
+      when " " then :space
+      when "\n" then :enter
       when "\e[2~" then :insert
       when "\e[3~" then :delete
       when "\e[5~" then :pg_up
       when "\e[6~" then :pg_down
-      when "\e[H"  then :home
-      when "\e[F"  then :end
-      else raise "Unknown key #{key.inspect}" if ENV["DEBUG"] == 'all'
+      when "\e[H" then :home
+      when "\e[F" then :end
+      else raise "Unknown key #{key.inspect}" if ENV["DEBUG"] == "all"
       end
     end
 
@@ -86,7 +86,7 @@ module RichEngine
     end
 
     def digit?(char)
-      char.between?('0', '9')
+      char.between?("0", "9")
     end
   end
 end

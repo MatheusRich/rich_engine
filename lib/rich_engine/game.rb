@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'canvas'
-require_relative 'io'
+require_relative "canvas"
+require_relative "io"
 
 module RichEngine
   # Example:
@@ -58,17 +58,19 @@ module RichEngine
       end
 
       on_destroy
-
     ensure
       Terminal.display_cursor
       Terminal.enable_echo
     end
 
-    def on_create; end
+    def on_create
+    end
 
-    def on_update(_elapsed_time, _key); end
+    def on_update(_elapsed_time, _key)
+    end
 
-    def on_destroy; end
+    def on_destroy
+    end
 
     private
 

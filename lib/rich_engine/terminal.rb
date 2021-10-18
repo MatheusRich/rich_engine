@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'terminal/cursor'
+require_relative "terminal/cursor"
 
 module RichEngine
   module Terminal

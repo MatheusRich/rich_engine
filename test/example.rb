@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'rich_engine'
+require "rich_engine"
 
 class TimerExample < RichEngine::Game
   def on_create
     @timer = RichEngine::Timer.new
-    @canvas.bg = '·'
+    @canvas.bg = "·"
   end
 
   def on_update(elapsed_time, key)
