@@ -3,7 +3,13 @@
 module RichEngine
   module Chance
     def self.of(value, rand_gen: method(:rand))
-      rand_gen.call < (value / 100.0)
+      percent = if value > 1
+        value / 100.0
+      else
+        value
+      end
+
+      rand_gen.call < percent
     end
   end
 end
