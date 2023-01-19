@@ -50,7 +50,7 @@ module RichEngine
 
         key = read_input
         should_keep_playing = check_exit { on_update(elapsed_time, key) }
-        draw
+        render
 
         break unless should_keep_playing
       end
@@ -68,10 +68,6 @@ module RichEngine
     end
 
     def on_destroy
-    end
-
-    def draw
-      @io.write(@canvas.canvas)
     end
 
     def quit!
