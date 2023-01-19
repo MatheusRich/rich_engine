@@ -68,6 +68,8 @@ module RichEngine
     end
 
     def bg=(bg)
+      return if @bg == bg
+
       @bg = bg
       clear
     end
