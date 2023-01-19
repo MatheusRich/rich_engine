@@ -20,6 +20,14 @@ module RichEngine
     end
 
     def write_string(str, x: 0, y: 0, fg: :white, bg: :transparent)
+      if x == :center
+        x = (@width - str.length) / 2
+      end
+
+      if y == :center
+        y = (@height - str.length) / 2
+      end
+
       fg = Array(fg).cycle
       bg = Array(bg).cycle
 
