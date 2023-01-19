@@ -12,7 +12,7 @@ module RichEngine
       @width = width
       @height = height
       @bg = bg
-      @canvas = create_blank_canvas
+      clear
     end
 
     def dimentions
@@ -43,14 +43,12 @@ module RichEngine
     end
 
     def clear
-      @canvas = @blank_canvas
+      @canvas = create_blank_canvas
     end
 
     def bg=(bg)
       @bg = bg
-
-      create_blank_canvas
-      # NOTE: Should I run `clear` too?
+      clear
     end
 
     private
