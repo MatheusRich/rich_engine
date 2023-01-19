@@ -6,7 +6,7 @@ module RichEngine
   class Canvas
     using StringColors
 
-    attr_reader :canvas
+    attr_reader :canvas, :bg
 
     def initialize(width, height, bg: " ")
       @width = width
@@ -44,9 +44,22 @@ module RichEngine
       end
     end
 
-    # TODO: Add `[](x,y)`
+    def out_of_bounds?(x, y)
+      return true if x < 0
+      return true if x >= @width
+      return true if y < 0
+      return true if y >= @height
+
+      false
+    end
+
+    def [](x, y)
+      @canvas[at(x, y)]
+    end
 
     def []=(x, y, value)
+      return if out_of_bounds?(x, y)
+
       @canvas[at(x, y)] = value
     end
 
@@ -60,10 +73,6 @@ module RichEngine
     end
 
     private
-
-    def [](x, y)
-      @canvas[at(x, y)]
-    end
 
     def at(x, y)
       y * @width + x
