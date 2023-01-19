@@ -44,10 +44,10 @@ module RichEngine
 
       on_create
 
-      previous_time = Time.now
+      previous_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
       loop do
-        current_time = Time.now
+        current_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         elapsed_time = current_time - previous_time
         previous_time = current_time
 
