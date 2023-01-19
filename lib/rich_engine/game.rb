@@ -72,6 +72,10 @@ module RichEngine
     def on_destroy
     end
 
+    def quit!
+      raise Exit
+    end
+
     private
 
     def read_input
@@ -84,6 +88,8 @@ module RichEngine
 
     def check_exit
       yield
+
+      true
     rescue Exit
       false
     end
