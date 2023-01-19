@@ -12,12 +12,9 @@ module RichEngine
   #     end
   #
   #     def on_update(elapsed_time, key)
-  #       raise MyGame::Exit if key == :q
+  #       quit! if key == :q
   #
   #       @canvas.write_string(@title, x: 1, y: 1)
-  #       @io.write(@canvas.canvas)
-  #
-  #       true
   #     end
   #   end
   #
@@ -53,6 +50,7 @@ module RichEngine
 
         key = read_input
         should_keep_playing = check_exit { on_update(elapsed_time, key) }
+        draw
 
         break unless should_keep_playing
       end
@@ -70,6 +68,10 @@ module RichEngine
     end
 
     def on_destroy
+    end
+
+    def draw
+      @io.write(@canvas.canvas)
     end
 
     def quit!
