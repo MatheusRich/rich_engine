@@ -15,7 +15,6 @@ class TimerExample < RichEngine::Game
     @canvas.clear
     @canvas.write_string("Elapsed: #{@timer.get.round(1)}s", x: 1, y: 1)
 
-
     quit! if @timer.get > 10
   end
 end
