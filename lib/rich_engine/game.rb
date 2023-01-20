@@ -26,6 +26,7 @@ module RichEngine
     def initialize(width, height)
       @width = width
       @height = height
+      @config = {screen_width: @width, screen_height: @height}
       @io = RichEngine::IO.new(width, height)
       @canvas = RichEngine::Canvas.new(width, height)
     end
