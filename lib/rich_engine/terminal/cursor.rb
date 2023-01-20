@@ -14,10 +14,14 @@ module RichEngine
       end
 
       def go(position)
+        print at(position)
+      end
+
+      def at(position)
         case position
-        when :home then print "\e[H"
-        when :up then print "\e[A"
-        when :down then print "\e[B"
+        when :home then "\e[H"
+        when :up then "\e[A"
+        when :down then "\e[B"
         else raise "Invalid cursor position: '#{position}'"
         end
       end
