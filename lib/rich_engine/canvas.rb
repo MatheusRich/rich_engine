@@ -24,7 +24,7 @@ module RichEngine
         line.each_char.with_index do |char, j|
           next if char == " "
 
-          @canvas[at(x + j, y + i)] = char.fg(fg)
+          self[x + j, y + i] = char.fg(fg)
         end
       end
     end
