@@ -9,7 +9,7 @@ class TimerExample < RichEngine::Game
   end
 
   def on_update(elapsed_time, key)
-    quite! if key == :q
+    quit! if key == :q
 
     @timer.update(elapsed_time)
     @canvas.clear
