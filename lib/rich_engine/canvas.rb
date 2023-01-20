@@ -19,6 +19,16 @@ module RichEngine
       [@width, @height]
     end
 
+    def draw_sprite(sprite, x: 0, y: 0, fg: :white)
+      sprite.split("\n").each.with_index do |line, i|
+        line.each_char.with_index do |char, j|
+          next if char == " "
+
+          @canvas[at(x + j, y + i)] = char.fg(fg)
+        end
+      end
+    end
+
     def write_string(str, x: 0, y: 0, fg: :white, bg: :transparent)
       if x == :center
         x = (@width - str.length) / 2
@@ -39,6 +49,16 @@ module RichEngine
     def draw_rect(x:, y:, width:, height:, char: "█", color: :white)
       (x..(x + width - 1)).each do |x_pos|
         (y..(y + height - 1)).each do |y_pos|
+          self[x_pos, y_pos] = char.fg(color)
+        end
+      end
+    end
+
+    def draw_circle(x:, y:, radius:, char: "█", color: :white)
+      (x - radius..x + radius).each do |x_pos|
+        (y - radius..y + radius).each do |y_pos|
+          next if (x_pos - x)**2 + (y_pos - y)**2 > radius**2
+
           self[x_pos, y_pos] = char.fg(color)
         end
       end
