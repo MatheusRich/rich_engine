@@ -5,6 +5,8 @@ require "io/console"
 
 module RichEngine
   class IO
+    Signal.trap("INT") { raise Game::Exit }
+
     def initialize(width, height)
       @width = width
       @height = height

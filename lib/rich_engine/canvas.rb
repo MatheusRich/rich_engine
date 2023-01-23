@@ -19,6 +19,14 @@ module RichEngine
       [@width, @height]
     end
 
+    def each_coord(&block)
+      (0...@width).each do |x|
+        (0...@height).each do |y|
+          block.call(x, y)
+        end
+      end
+    end
+
     def draw_sprite(sprite, x: 0, y: 0, fg: :white)
       sprite.split("\n").each.with_index do |line, i|
         line.each_char.with_index do |char, j|
@@ -101,7 +109,7 @@ module RichEngine
     end
 
     def create_blank_canvas
-      @blank_canvas = (0...(@width * @height)).map { @bg }
+      (0...(@width * @height)).map { @bg }
     end
   end
 end
