@@ -3,7 +3,7 @@
 module RichEngine
   module Terminal
     module Cursor
-      module_function
+      extend self
 
       def hide
         system("tput civis")
@@ -14,7 +14,7 @@ module RichEngine
       end
 
       def go(position)
-        print at(position)
+        $stdout.print at(position)
       end
 
       def at(position)
