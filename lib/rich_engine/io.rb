@@ -8,14 +8,17 @@ module RichEngine
     Signal.trap("INT") { raise Game::Exit }
 
     def initialize(width, height)
-      @width = width
-      @height = height
+      @screen_width = width
+      @screen_height = height
+      @canvas_cache = nil
     end
 
     def write(canvas)
-      Terminal::Cursor.go(:home)
-      output = build_output(canvas)
-      puts output
+      with_caching(canvas) do
+        Terminal::Cursor.go(:home)
+        output = build_output(canvas)
+        $stdout.write output
+      end
     end
 
     def read_async
@@ -41,21 +44,30 @@ module RichEngine
 
     private
 
+    def with_caching(canvas)
+      return :cache_hit if canvas == @canvas_cache && ENV["CACHING"]
+
+      yield
+      @canvas_cache = canvas
+
+      :cache_miss
+    end
+
     def build_output(canvas)
       output = ""
 
       i = 0
       while i < canvas_size
-        output += "#{canvas[i...(i + @width)].join}\n"
+        output += "#{canvas[i...(i + @screen_width)].join}\n"
 
-        i += @width
+        i += @screen_width
       end
 
       output
     end
 
     def canvas_size
-      @canvas_size ||= @height * @width
+      @canvas_size ||= @screen_height * @screen_width
     end
 
     def symbolize_key(key)
