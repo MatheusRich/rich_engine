@@ -90,6 +90,9 @@ module RichEngine
     end
 
     def [](x, y)
+      x = x.round
+      y = y.round
+
       @canvas[at(x, y)]
     end
 
