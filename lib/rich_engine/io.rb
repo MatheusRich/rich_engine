@@ -13,7 +13,9 @@ module RichEngine
       @canvas_cache = nil
     end
 
-    def write(canvas)
+    def write(canvas, use_caching:)
+      delete_cache unless use_caching
+
       with_caching(canvas) do
         Terminal::Cursor.goto(0, 0)
         output = build_output(canvas)
@@ -43,6 +45,10 @@ module RichEngine
     end
 
     private
+
+    def delete_cache
+      @canvas_cache = nil
+    end
 
     def with_caching(canvas)
       return :cache_hit if canvas == @canvas_cache && ENV["CACHING"]
