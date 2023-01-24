@@ -13,17 +13,8 @@ module RichEngine
         system("tput cnorm")
       end
 
-      def go(position)
-        $stdout.print at(position)
-      end
-
-      def at(position)
-        case position
-        when :home then "\e[H"
-        when :up then "\e[A"
-        when :down then "\e[B"
-        else raise "Invalid cursor position: '#{position}'"
-        end
+      def goto(x, y)
+        $stdout.goto(x, y)
       end
     end
   end

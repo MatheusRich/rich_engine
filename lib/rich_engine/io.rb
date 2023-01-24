@@ -15,7 +15,7 @@ module RichEngine
 
     def write(canvas)
       with_caching(canvas) do
-        Terminal::Cursor.go(:home)
+        Terminal::Cursor.goto(0, 0)
         output = build_output(canvas)
         $stdout.write output
       end
