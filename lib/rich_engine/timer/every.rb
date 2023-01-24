@@ -24,6 +24,11 @@ module RichEngine
         end
       end
 
+      def interval=(interval)
+        @interval = interval
+        reset!
+      end
+
       private
 
       def reset!
