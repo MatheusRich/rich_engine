@@ -2,6 +2,8 @@
 
 module RichEngine
   class Matrix
+    # TODO: implement Enumerable
+
     attr_accessor :vec
 
     def initialize(width: 1, height: 1, fill_with: nil)
@@ -14,6 +16,10 @@ module RichEngine
 
     def []=(x, y, value)
       @vec[x][y] = value
+    end
+
+    def any?(&block)
+      @vec.any? { |row| row.any?(&block) }
     end
 
     def each
