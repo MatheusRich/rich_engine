@@ -51,7 +51,7 @@ module RichEngine
     end
 
     def with_caching(canvas)
-      return :cache_hit if canvas == @canvas_cache && ENV["CACHING"]
+      return :cache_hit if canvas == @canvas_cache
 
       yield
       @canvas_cache = canvas
