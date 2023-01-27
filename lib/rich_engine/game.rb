@@ -49,11 +49,11 @@ module RichEngine
         elapsed_time = current_time - previous_time
         previous_time = current_time
 
-        key = read_input
-        should_keep_playing = check_exit { on_update(elapsed_time, key) }
-        render
-
-        break unless should_keep_playing
+        until_game_exit do
+          key = read_input
+          on_update(elapsed_time, key)
+          render
+        end
       end
 
       on_destroy
@@ -85,12 +85,10 @@ module RichEngine
       @io.write(@canvas.canvas, use_caching: use_caching)
     end
 
-    def check_exit
+    def until_game_exit
       yield
-
-      true
     rescue Exit
-      false
+      raise StopIteration
     end
   end
 end
