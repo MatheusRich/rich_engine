@@ -40,6 +40,7 @@ module RichEngine
       Terminal.hide_cursor
       Terminal.disable_echo
 
+      prepare_screen
       on_create
 
       previous_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -49,17 +50,14 @@ module RichEngine
         elapsed_time = current_time - previous_time
         previous_time = current_time
 
-        until_game_exit do
-          key = read_input
-          on_update(elapsed_time, key)
-          render
+        check_game_exit do
+          game_loop(elapsed_time)
         end
       end
 
       on_destroy
     ensure
-      Terminal.display_cursor
-      Terminal.enable_echo
+      restore_screen
     end
 
     def on_create
@@ -75,7 +73,24 @@ module RichEngine
       raise Exit
     end
 
+    def game_loop(elapsed_time)
+      key = read_input
+      on_update(elapsed_time, key)
+      render
+    end
+
     private
+
+    def prepare_screen
+      Terminal.clear
+      Terminal.hide_cursor
+      Terminal.disable_echo
+    end
+
+    def restore_screen
+      Terminal.display_cursor
+      Terminal.enable_echo
+    end
 
     def read_input
       @io.read_async
@@ -85,7 +100,7 @@ module RichEngine
       @io.write(@canvas.canvas, use_caching: use_caching)
     end
 
-    def until_game_exit
+    def check_game_exit
       yield
     rescue Exit
       raise StopIteration
