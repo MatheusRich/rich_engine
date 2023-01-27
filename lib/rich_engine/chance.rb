@@ -11,5 +11,9 @@ module RichEngine
 
       rand_gen.call < percent
     end
+
+    def self.of_one_in(value, rand_gen: method(:rand))
+      of(1 / value.to_f, rand_gen: rand_gen)
+    end
   end
 end

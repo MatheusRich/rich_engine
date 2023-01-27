@@ -19,6 +19,14 @@ module RichEngine
       [@width, @height]
     end
 
+    def each_coord(&block)
+      (0...@width).each do |x|
+        (0...@height).each do |y|
+          block.call(x, y)
+        end
+      end
+    end
+
     def draw_sprite(sprite, x: 0, y: 0, fg: :white)
       sprite.split("\n").each.with_index do |line, i|
         line.each_char.with_index do |char, j|
@@ -47,6 +55,11 @@ module RichEngine
     end
 
     def draw_rect(x:, y:, width:, height:, char: "█", color: :white)
+      x = x.round
+      y = y.round
+      width = width.round
+      height = height.round
+
       (x..(x + width - 1)).each do |x_pos|
         (y..(y + height - 1)).each do |y_pos|
           self[x_pos, y_pos] = char.fg(color)
@@ -55,6 +68,9 @@ module RichEngine
     end
 
     def draw_circle(x:, y:, radius:, char: "█", color: :white)
+      x = x.round
+      y = y.round
+
       (x - radius..x + radius).each do |x_pos|
         (y - radius..y + radius).each do |y_pos|
           next if (x_pos - x)**2 + (y_pos - y)**2 > radius**2
@@ -74,10 +90,15 @@ module RichEngine
     end
 
     def [](x, y)
+      x = x.round
+      y = y.round
+
       @canvas[at(x, y)]
     end
 
     def []=(x, y, value)
+      x = x.round
+      y = y.round
       return if out_of_bounds?(x, y)
 
       @canvas[at(x, y)] = value
@@ -101,7 +122,7 @@ module RichEngine
     end
 
     def create_blank_canvas
-      @blank_canvas = (0...(@width * @height)).map { @bg }
+      (0...(@width * @height)).map { @bg }
     end
   end
 end

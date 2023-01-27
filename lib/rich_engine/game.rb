@@ -31,7 +31,7 @@ module RichEngine
       @canvas = RichEngine::Canvas.new(width, height)
     end
 
-    def self.play(width = 50, height = 10)
+    def self.play(width: 50, height: 10)
       new(width, height).play
     end
 
@@ -81,8 +81,8 @@ module RichEngine
       @io.read_async
     end
 
-    def render
-      @io.write(@canvas.canvas)
+    def render(use_caching: true)
+      @io.write(@canvas.canvas, use_caching: use_caching)
     end
 
     def check_exit

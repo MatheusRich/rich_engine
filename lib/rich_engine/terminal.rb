@@ -19,11 +19,11 @@ module RichEngine
     end
 
     def disable_echo
-      system("stty -echo")
+      $stdin.echo = false
     end
 
     def enable_echo
-      system("stty echo")
+      $stdin.echo = true
     end
   end
 end

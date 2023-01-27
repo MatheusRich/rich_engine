@@ -85,7 +85,7 @@ class Cloud
   def draw(canvas)
     canvas.draw_sprite(
       @sprite,
-      x: @x.round,
+      x: @x,
       y: @y,
       fg: @color
     )
