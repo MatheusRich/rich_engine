@@ -10,7 +10,7 @@ module RichEngine
     def initialize(width, height)
       @screen_width = width
       @screen_height = height
-      @canvas_cache = nil
+      delete_cache
     end
 
     def write(canvas, use_caching:)
