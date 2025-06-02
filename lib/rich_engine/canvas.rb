@@ -15,7 +15,7 @@ module RichEngine
       clear
     end
 
-    def dimentions
+    def dimensions
       [@width, @height]
     end
 
