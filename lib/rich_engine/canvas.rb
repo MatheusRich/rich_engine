@@ -27,6 +27,10 @@ module RichEngine
       end
     end
 
+    def rows
+      @canvas.each_slice(@width)
+    end
+
     def draw_sprite(sprite, x: 0, y: 0, fg: :white)
       sprite.split("\n").each.with_index do |line, i|
         line.each_char.with_index do |char, j|
@@ -109,8 +113,6 @@ module RichEngine
     end
 
     def bg=(bg)
-      return if @bg == bg
-
       @bg = bg
       clear
     end
