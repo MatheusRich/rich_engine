@@ -9,7 +9,7 @@ class GrainsOfSandExample < RichEngine::Game
     @canvas.bg = RichEngine::UI::Textures.solid.fg(:yellow)
     @world = World.new(
       grains_of_sand: [
-        GrainOfSand.new(x: @config[:screen_width] / 2, y: -1),
+        GrainOfSand.new(x: @config[:screen_width] / 2 - rand(-10..10), y: -1),
         GrainOfSand.new(x: @config[:screen_width] / 2, y: -@config[:screen_height] / 2)
       ],
       game_config: @config
@@ -32,14 +32,13 @@ class World
     @grains_of_sand = grains_of_sand
     @game_config = game_config
     @tiles = RichEngine::Matrix.new(width: width, height: height, fill_with: :empty)
-    @place_drop_timer = RichEngine::Timer.every(seconds: 0.01)
+    @drop_timer = RichEngine::Timer.every(seconds: 0.05)
   end
 
   def update(elapsed_time, _key)
-    @place_drop_timer.update(elapsed_time)
-
-    @place_drop_timer.when_ready do
-      drops_movement = @grains_of_sand.map { |grain_of_sand|
+    @drop_timer.update(elapsed_time)
+    @drop_timer.when_ready do
+      results = @grains_of_sand.map { |grain_of_sand|
         next :not_moved if locked?(grain_of_sand)
 
         if fits?(*grain_of_sand.try_move(:down).position)
@@ -57,13 +56,10 @@ class World
         end
       }
 
-      first_drop_didnt_move = drops_movement.first == :not_moved
-      no_drops_moved = drops_movement.all? { _1 == :not_moved }
-
-      if no_drops_moved
+      if results.none?(:moved)
         raise RichEngine::Game::Exit
-      elsif first_drop_didnt_move && has_available_space?
-        @grains_of_sand << GrainOfSand.new(x: @game_config[:screen_width] / 2, y: 0)
+      elsif has_available_space?
+        @grains_of_sand << GrainOfSand.new(x: (@game_config[:screen_width] / 2) + rand(-20..20), y: 0)
       end
     end
   end
@@ -146,7 +142,7 @@ class GrainOfSand
   end
 
   def draw(canvas)
-    canvas.write_string("o", x: @x, y: @y, fg: :black, bg: :yellow)
+    canvas.write_string("•", x: @x, y: @y, fg: :black, bg: :yellow)
   end
 end
 
