@@ -36,10 +36,6 @@ module RichEngine
     end
 
     def play
-      Terminal.clear
-      Terminal.hide_cursor
-      Terminal.disable_echo
-
       prepare_screen
       on_create
 
