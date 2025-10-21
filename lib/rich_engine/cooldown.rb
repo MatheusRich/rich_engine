@@ -3,12 +3,12 @@
 module RichEngine
   class Cooldown
     def initialize(target_time)
-      @timer = 0
       @target_time = target_time
+      @timer = target_time
     end
 
     def update(dt)
-      @timer += dt
+      @timer -= dt
     end
 
     def get
@@ -16,11 +16,11 @@ module RichEngine
     end
 
     def reset!
-      @timer = 0
+      @timer = @target_time
     end
 
     def finished?
-      @timer >= @target_time
+      @timer <= 0
     end
     alias_method :ready?, :finished?
   end
