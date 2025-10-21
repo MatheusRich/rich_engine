@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matheus Richard"]
   spec.email = ["matheusrichardt@gmail.com"]
 
-  spec.summary = "A Ruby game engine"
+  spec.summary = "A Ruby engine for terminal games."
   spec.homepage = "https://github.com/MatheusRich/rich_engine"
   spec.license = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
