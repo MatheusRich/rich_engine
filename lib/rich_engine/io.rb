@@ -24,24 +24,22 @@ module RichEngine
     end
 
     def read_async
-      $stdin.raw do |io|
-        key = $stdin.read_nonblock(2)
-        _c1, c2 = key.chars
+      key = $stdin.read_nonblock(2)
+      _c1, c2 = key.chars
 
-        if c2 && csi?(key)
-          c3, c4 = $stdin.read_nonblock(2).chars
+      if c2 && csi?(key)
+        c3, c4 = $stdin.read_nonblock(2).chars
 
-          if digit?(c3)
-            symbolize_key(key + c3 + c4)
-          else
-            symbolize_key(key + c3)
-          end
+        if digit?(c3)
+          symbolize_key("#{key}#{c3}#{c4}")
         else
-          symbolize_key(key)
+          symbolize_key("#{key}#{c3}")
         end
-      rescue ::IO::WaitReadable
-        nil
+      else
+        symbolize_key(key)
       end
+    rescue ::IO::WaitReadable
+      nil
     end
 
     private
@@ -60,11 +58,11 @@ module RichEngine
     end
 
     def build_output(canvas)
-      output = ""
+      output = +""
 
       i = 0
       while i < canvas_size
-        output += "#{canvas[i...(i + @screen_width)].join}\n"
+        output << "#{canvas[i...(i + @screen_width)].join}\n"
 
         i += @screen_width
       end
