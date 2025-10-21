@@ -2,6 +2,7 @@
 
 require "timeout"
 require "io/console"
+require "stringio"
 
 module RichEngine
   class IO
@@ -24,22 +25,24 @@ module RichEngine
     end
 
     def read_async
-      key = $stdin.read_nonblock(2)
-      _c1, c2 = key.chars
+      $stdin.raw do |io|
+        key = $stdin.read_nonblock(2)
+        _c1, c2 = key.chars
 
-      if c2 && csi?(key)
-        c3, c4 = $stdin.read_nonblock(2).chars
+        if c2 && csi?(key)
+          c3, c4 = $stdin.read_nonblock(2).chars
 
-        if digit?(c3)
-          symbolize_key("#{key}#{c3}#{c4}")
+          if digit?(c3)
+            symbolize_key("#{key}#{c3}#{c4}")
+          else
+            symbolize_key("#{key}#{c3}")
+          end
         else
-          symbolize_key("#{key}#{c3}")
+          symbolize_key(key)
         end
-      else
-        symbolize_key(key)
+      rescue ::IO::WaitReadable
+        nil
       end
-    rescue ::IO::WaitReadable
-      nil
     end
 
     private
@@ -58,7 +61,7 @@ module RichEngine
     end
 
     def build_output(canvas)
-      output = +""
+      output = StringIO.new
 
       i = 0
       while i < canvas_size
@@ -67,7 +70,7 @@ module RichEngine
         i += @screen_width
       end
 
-      output
+      output.string
     end
 
     def canvas_size
