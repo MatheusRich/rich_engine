@@ -7,7 +7,7 @@ module RichEngine
   class Canvas
     using StringColors
 
-    attr_reader :canvas, :bg
+    attr_reader :canvas, :bg, :width, :height
 
     def initialize(width, height, bg: " ")
       @width = width
