@@ -111,7 +111,7 @@ module RichEngine
         color(46)
       end
 
-      def on_gray
+      def on_white
         color(47)
       end
 
@@ -172,8 +172,6 @@ module RichEngine
       def reverse_color
         "\e[7m#{self}\e[27m"
       end
-
-      private
 
       def color(n)
         "\e[#{n}m#{self}\e[0m"
