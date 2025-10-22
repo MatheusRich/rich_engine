@@ -1,5 +1,5 @@
-require_relative "./enum/value"
-require_relative "./enum/mixin"
+require_relative "enum/value"
+require_relative "enum/mixin"
 
 module RichEngine
   class Enum

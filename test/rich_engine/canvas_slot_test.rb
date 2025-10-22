@@ -85,9 +85,9 @@ class CanvasSlotTest < Minitest::Test
     # A 3x3 rect starting at (-1,-1) in local slot coords should be clipped to 2x2
     slot.draw_rect(x: -1, y: -1, width: 3, height: 3)
 
-    [[8,3],[9,3],[8,4],[9,4]].each do |x,y|
+    [[8, 3], [9, 3], [8, 4], [9, 4]].each do |x, y|
       # Strip ANSI; expect the filled char "█"
-      val = canvas[x,y].gsub(/\e\[[0-9;]*m/, "")
+      val = canvas[x, y].gsub(/\e\[[0-9;]*m/, "")
       assert_equal "█", val
     end
 
