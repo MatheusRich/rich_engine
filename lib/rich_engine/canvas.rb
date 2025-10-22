@@ -32,12 +32,12 @@ module RichEngine
       @canvas.each_slice(@width)
     end
 
-    def draw_sprite(sprite, x: 0, y: 0, fg: :white)
+    def draw_sprite(sprite, x: 0, y: 0, fg: :white, bg: :transparent)
       sprite.split("\n").each.with_index do |line, i|
         line.each_char.with_index do |char, j|
           next if char == " "
 
-          self[x + j, y + i] = char.fg(fg)
+          self[x + j, y + i] = char.fg(fg).bg(bg)
         end
       end
     end
