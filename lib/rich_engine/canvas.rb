@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "string_colors"
+require_relative "canvas/slot"
 
 module RichEngine
   class Canvas
@@ -115,6 +116,17 @@ module RichEngine
     def bg=(bg)
       @bg = bg
       clear
+    end
+
+    # Define a logical sub-region of this canvas that translates local
+    # coordinates into the parent canvas space.
+    #
+    # Example:
+    #   log = canvas.slot(x: 80, y: 0, width: 20, height: 10)
+    #   log.write_string("Hello", x: 1, y: 1)  # => writes at (81, 1)
+    #
+    def slot(x:, y:, width:, height:, bg: nil)
+      Slot.new(self, x, y, width, height, bg: bg)
     end
 
     private
