@@ -289,9 +289,22 @@ other = RichEngine::Matrix.new(width: 10, height: 5, fill_with: :a)
 pairs = grid.zip(other) # => matrix of [left, right]
 ```
 
-### UI::Textures (useful glyphs)
+### UI::Textures
 
-Convenience characters for shading and blocks: `empty`, `solid`, `light_shade`, `medium_shade`, `dark_shade`, `top_half`, `bottom_half`, `left_half`, `right_half`, `plaid`.
+Convenience glyphs for shading and blocky fills.
+
+| Glyph | Name         |
+|-------|--------------|
+| ␠     | empty        |
+| █     | solid        |
+| ▓     | light_shade  |
+| ▒     | medium_shade |
+| ░     | dark_shade   |
+| ▀     | top_half     |
+| ▄     | bottom_half  |
+| ▌     | left_half    |
+| ▐     | right_half   |
+| ▞     | plaid        |
 
 ```ruby
 @canvas.draw_rect(x: 10, y: 6, width: 8, height: 2, char: RichEngine::UI::Textures.solid, color: :magenta)
