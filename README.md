@@ -1,16 +1,20 @@
 # RichEngine
 
-RichEngine is a tiny terminal game engine for Ruby. It gives you a simple game loop, a 2D character canvas with colors, non-blocking keyboard input, and a handful of helpers (timers, cooldowns, RNG, enums, matrices) so you can ship playful ASCII games quickly.
+RichEngine is a tiny terminal game engine for Ruby. It gives you a simple game
+loop, a 2D character canvas with colors, non-blocking keyboard input, and a
+handful of helpers (timers, cooldowns, RNG, enums, matrices) so you can ship
+playful ASCII games quickly.
 
-At its core, you subclass `RichEngine::Game`, implement a few lifecycle hooks, and draw to a `Canvas` each frame.
+At its core, you subclass `RichEngine::Game`, implement a few lifecycle hooks,
+and draw to a `Canvas` each frame.
 
 ## Quick start: build a simple game
 
 Below is a minimal, complete example showing how to:
 - create a game by subclassing `RichEngine::Game`
 - quit on a key press
-- sleep to cap the frame rate
 - draw text and shapes to the screen
+- use canvas slots to keep a bottom HUD separate from the playfield
 
 ```ruby
 require "rich_engine"
@@ -19,13 +23,10 @@ class MyGame < RichEngine::Game
   using RichEngine::StringColors
 
   TITLE = "Catch the Star"
-
   PLAYER_CHAR = "@"
   PLAYER_COLOR = :yellow
-
   ITEM_COLORS = [:green, :magenta, :cyan]
   ITEM_CHAR = "*"
-
   HUD_HEIGHT = 3
 
   def on_create
@@ -33,6 +34,8 @@ class MyGame < RichEngine::Game
     @player_x = 2
     @player_y = field_height / 2
     @timer = RichEngine::Cooldown.new(5.0)
+    @field = @canvas.slot(x: 0, y: 0, width: @width, height: field_height, bg: RichEngine::UI::Textures.solid.bright_white)
+    @hud   = @canvas.slot(x: 0, y: field_height, width: @width, height: HUD_HEIGHT)
     spawn_item
   end
 
@@ -60,25 +63,22 @@ class MyGame < RichEngine::Game
       quit!
     end
 
-    # Pick up item -> +1 point, respawn, reset timer
+    # Pick up item
     if @player_x == @item_x && @player_y == @item_y
       @score += 1
       spawn_item
       @timer.reset!
     end
 
-    # drawing to the canvas
+    # rendering the frame
     @canvas.clear
-    @canvas.bg = RichEngine::UI::Textures.solid.bright_white
 
-    # Item and player
-    @canvas.write_string(ITEM_CHAR, x: @item_x, y: @item_y, fg: @item_color, bg: :bright_white)
-    @canvas.write_string(PLAYER_CHAR, x: @player_x, y: @player_y, fg: PLAYER_COLOR, bg: :bright_white)
+    @field.write_string(ITEM_CHAR, x: @item_x, y: @item_y, fg: @item_color)
+    @field.write_string(PLAYER_CHAR, x: @player_x, y: @player_y, fg: PLAYER_COLOR)
 
-    # HUD at the bottom rows
-    @canvas.write_string(TITLE.ljust(@width), x: 0, y: hud_y, fg: :bright_cyan)
-    @canvas.write_string("Score: #{@score}".ljust(@width), x: 0, y: hud_y + 1, fg: :bright_yellow)
-    @canvas.write_string("Time: #{format('%.1f', @timer.get)}s".ljust(@width), x: 0, y: hud_y + 2, fg: :bright_green)
+    @hud.write_string(TITLE, x: 0, y: 0, fg: :bright_cyan)
+    @hud.write_string("Score: #{@score}", x: 0, y: 1, fg: :bright_yellow)
+    @hud.write_string("Time: #{format('%.1f', @timer.get)}s", x: 0, y: 2, fg: :bright_green)
   end
 
   def on_destroy
@@ -87,16 +87,11 @@ class MyGame < RichEngine::Game
 
   private
 
-  def hud_y
-    @height - HUD_HEIGHT
-  end
-
   def field_height
     @height - HUD_HEIGHT
   end
 
   def spawn_item
-    # Spawn above the HUD so it won't overlap with on-screen text
     @item_x = rand(@width)
     @item_y = rand(field_height)
     @item_color = ITEM_COLORS.sample
@@ -113,7 +108,9 @@ Notes
   - `on_destroy` runs when the game exits.
 - Keys: letters are symbols (e.g., `:q`), plus arrows (`:up`, `:down`, `:left`, `:right`), `:space`, `:enter`, `:esc`, `:pg_up`, `:pg_down`, `:home`, `:end`.
 - Drawing: all drawing happens on `@canvas`. Call `@canvas.clear` each frame if you want to redraw from scratch.
-- Rendering is handled for you. `Game` will flush the canvas to the terminal after each `on_update`.
+- Rendering and frame pacing are handled for you:
+  - `Game` flushes the canvas after each frame
+  - `Game` auto-sleeps to hit your target FPS (60 by default, but configurable via `target_fps:` on `Game.play`)
 
 ## Canvas essentials
 
@@ -123,6 +120,20 @@ Notes
 - `draw_circle(x:, y:, radius:, char: "█", color: :white)` — draw a filled circle
 - `draw_sprite(sprite, x: 0, y: 0, fg: :white)` — draw a multi-line string as a sprite; spaces are transparent
 - `clear` — clear the entire canvas; `bg=` changes the background fill character and clears
+
+### Canvas slots (sub-canvases)
+
+Slots are sub-regions of a canvas that translate local coordinates and clip drawing automatically. Great for HUDs and side panels.
+
+```ruby
+canvas = RichEngine::Canvas.new(100, 40)
+hud = canvas.slot(x: 0, y: 35, width: 100, height: 5, bg: " ")
+hud.clear
+hud.write_string("Score: 10", x: 2, y: 1, fg: :bright_yellow)
+
+log = canvas.slot(x: 80, y: 0, width: 20, height: 35)
+log.write_string("Hello", x: 1, y: 1)  # writes to (81, 1) on the parent canvas
+```
 
 Colors are provided via a refinement used internally by the canvas. For text, prefer the `fg:` and `bg:` options on `write_string`.
 
@@ -139,18 +150,18 @@ All helpers live under `RichEngine::...` and are independent utilities you can u
 tick = RichEngine::Timer.new
 
 def on_update(dt, _key)
-    tick.update(dt)
-    if tick.get > 2
-        # do something every ~2 seconds
-        tick.reset!
-    end
+  tick.update(dt)
+  if tick.get > 2
+    # do something every ~2 seconds
+    tick.reset!
+  end
 end
 
 # Fixed interval
 spawn = RichEngine::Timer.every(seconds: 0.5)
 def on_update(dt, _key)
-    spawn.update(dt)
-    spawn.when_ready { spawn_enemy! }
+  spawn.update(dt)
+  spawn.when_ready { spawn_enemy! }
 end
 ```
 
@@ -162,11 +173,11 @@ Track a fixed delay and check if it’s ready.
 shoot_cd = RichEngine::Cooldown.new(0.25) # seconds
 
 def on_update(dt, key)
-    shoot_cd.update(dt)
-    if key == :space && shoot_cd.ready?
-        shoot!
-        shoot_cd.reset!
-    end
+  shoot_cd.update(dt)
+  if key == :space && shoot_cd.ready?
+    shoot!
+    shoot_cd.reset!
+  end
 end
 ```
 
@@ -190,18 +201,18 @@ STATE.running > STATE.idle #=> true
 
 # In a class via Mixin
 class Player
-    include RichEngine::Enum::Mixin
-    enum :state, {idle: 0, running: 1, paused: 2}
+  include RichEngine::Enum::Mixin
+  enum :state, {idle: 0, running: 1, paused: 2}
 
-    def initialize
-        @state = :idle
-    end
+  def initialize
+    @state = :idle
+  end
 
-    def update
-        if state.running?
-            # ...
-        end
+  def update
+    if state.running?
+      # ...
     end
+  end
 end
 ```
 
