@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "rich_engine/animation"
 require_relative "rich_engine/canvas"
 require_relative "rich_engine/chance"
 require_relative "rich_engine/cooldown"

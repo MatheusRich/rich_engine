@@ -137,6 +137,61 @@ log.write_string("Hello", x: 1, y: 1)  # writes to (81, 1) on the parent canvas
 
 Colors are provided via a refinement used internally by the canvas. For text, prefer the `fg:` and `bg:` options on `write_string`.
 
+## Animations
+
+`RichEngine::Animation` plays a sequence of string frames (sprites) at a fixed frames-per-second. Each frame is a multi-line string; spaces are treated as transparency by `Canvas#draw_sprite`.
+
+### Quick example
+
+```ruby
+# frozen_string_literal: true
+
+require "rich_engine"
+
+class AnimationExample < RichEngine::Game
+  def on_create
+    sprites = ["(•‿•)", "(•‿-)", "(-‿-)", "(-‿•)"]
+
+    @animation = RichEngine::Animation.new(
+      frames: sprites,
+      fps: 4,
+      loop: true,
+      fg: :bright_yellow
+    )
+  end
+
+  def on_update(elapsed_time, key)
+    quit! if key == :q
+
+    @animation.update(elapsed_time)
+
+    @canvas.clear
+    @animation.draw(@canvas, x: 0, y: 0)
+    @canvas.write_string("q: quit", x: 0, y: @config[:screen_height] - 1, fg: :black)
+  end
+end
+
+AnimationExample.play(width: 10, height: 3, target_fps: 30)
+```
+
+### API
+
+- Initialize: `RichEngine::Animation.new(frames:, fps: 12, loop: true, fg: :white)`
+  - `frames`: Array<String> — each string is a frame; can be multi-line. Spaces are transparent.
+  - `fps`: Integer/Float — how many frames per second to advance.
+  - `loop`: Boolean — if true, wrap to the first frame after the last; otherwise stop at the last frame.
+  - `fg`: Symbol — default foreground color when drawing.
+- Methods:
+  - `update(dt)`: advance internal timer; call once per frame with `elapsed_time`.
+  - `draw(canvas, x:, y:, fg: default)`: render current frame to the canvas.
+  - `play!`, `pause!`, `stop!`, `reset!`, `playing?`: control playback.
+  - `current_frame`: returns the current frame string.
+  - `fps=`: change playback speed at runtime.
+
+Notes
+- Frames are advanced only when enough time has elapsed per the configured `fps`.
+- When `loop: false`, the animation stops at the last frame and `playing?` becomes false.
+
 ## Helpers you can use
 
 All helpers live under `RichEngine::...` and are independent utilities you can use inside your game code.
