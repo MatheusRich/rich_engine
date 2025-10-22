@@ -23,16 +23,18 @@ module RichEngine
   class Game
     class Exit < StandardError; end
 
-    def initialize(width, height)
+    def initialize(width, height, target_fps: 60)
       @width = width
       @height = height
+      @target_fps = target_fps
+      @frame_budget = @target_fps ? 1.0 / @target_fps : nil
       @config = {screen_width: @width, screen_height: @height}
       @io = RichEngine::IO.new(width, height)
       @canvas = RichEngine::Canvas.new(width, height)
     end
 
-    def self.play(width: 50, height: 10)
-      new(width, height).play
+    def self.play(width: 50, height: 10, target_fps: 60)
+      new(width, height, target_fps: target_fps).play
     end
 
     def play
@@ -73,6 +75,7 @@ module RichEngine
       key = read_input
       on_update(elapsed_time, key)
       render
+      sleep_if_needed(elapsed_time)
     end
 
     private
@@ -94,6 +97,13 @@ module RichEngine
 
     def render(use_caching: true)
       @io.write(@canvas.canvas, use_caching: use_caching)
+    end
+
+    def sleep_if_needed(elapsed_time)
+      return if @frame_budget.nil?
+
+      sleep_time = @frame_budget - elapsed_time
+      sleep(sleep_time) if sleep_time > 0
     end
 
     def check_game_exit

@@ -72,16 +72,13 @@ class MyGame < RichEngine::Game
     @canvas.bg = RichEngine::UI::Textures.solid.bright_white
 
     # Item and player
-    @canvas.write_string(ITEM_CHAR, x: @item_x, y: @item_y, fg: @item_color, bg: :gray)
-    @canvas.write_string(PLAYER_CHAR, x: @player_x, y: @player_y, fg: PLAYER_COLOR, bg: :gray)
+    @canvas.write_string(ITEM_CHAR, x: @item_x, y: @item_y, fg: @item_color, bg: :bright_white)
+    @canvas.write_string(PLAYER_CHAR, x: @player_x, y: @player_y, fg: PLAYER_COLOR, bg: :bright_white)
 
     # HUD at the bottom rows
     @canvas.write_string(TITLE.ljust(@width), x: 0, y: hud_y, fg: :bright_cyan)
     @canvas.write_string("Score: #{@score}".ljust(@width), x: 0, y: hud_y + 1, fg: :bright_yellow)
     @canvas.write_string("Time: #{format('%.1f', @timer.get)}s".ljust(@width), x: 0, y: hud_y + 2, fg: :bright_green)
-
-    # sleep to cap FPS
-    sleep 1 / 60.0
   end
 
   def on_destroy
