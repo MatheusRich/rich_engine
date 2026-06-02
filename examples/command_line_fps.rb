@@ -44,15 +44,24 @@ class Sprite
     color ? glyph.fg(color) : glyph
   end
 
-  # A circular target: yellow bull, then alternating red/white rings.
+  # A square target: yellow bull, then concentric red/white square rings.
   def self.bullseye(radius)
-    radial(radius) do |ratio|
-      if ratio <= 0.2 then :bright_yellow
-      elsif ratio <= 0.45 then :bright_red
-      elsif ratio <= 0.72 then :bright_white
-      else :bright_red
+    size = radius * 2 + 1
+    glyphs = Array.new(size) { Array.new(size, "█") }
+    colors = Array.new(size) { Array.new(size) }
+
+    (0...size).each do |row|
+      (0...size).each do |col|
+        ring = [(col - radius).abs, (row - radius).abs].max # Nested 1-cell squares
+        colors[row][col] =
+          if ring.zero? then :bright_yellow # Bull
+          elsif ring.odd? then :bright_red
+          else :bright_white
+          end
       end
     end
+
+    new(glyphs, colors)
   end
 
   # A glowing orb: yellow core fading to red.
@@ -136,7 +145,6 @@ class CommandLineFPS < RichEngine::Game
   DEPTH = 16.0           # Maximum rendering distance
   SPEED = 5.0            # Walking speed
   TIME_LIMIT = 60.0      # Seconds to clear every target
-  REVEAL_TIME = 7.0      # Seconds the targets show on the minimap at the start
 
   BULLET_SPEED = 8.0     # Fireball travel speed (units/second)
   BULLET_RANGE = 6.0     # How far a fireball flies before fizzling out
@@ -145,7 +153,7 @@ class CommandLineFPS < RichEngine::Game
   TARGET_SCALE = 0.5     # Target size as a fraction of full wall height
   FIREBALL_SCALE = 0.2
 
-  TARGET_SPRITE = Sprite.bullseye(4)
+  TARGET_SPRITE = Sprite.bullseye(3)
   FIREBALL_SPRITE = Sprite.fireball(2)
 
   # One target tucked in each of the six outer rooms (player starts in the center).
@@ -184,8 +192,8 @@ class CommandLineFPS < RichEngine::Game
   # Player facing indicator on the minimap, indexed clockwise from east.
   DIR_ARROWS = ["→", "↘", "↓", "↙", "←", "↖", "↑", "↗"].freeze
 
-  MINIMAP_SCALE = 2 # Map cells per minimap cell (downsamples the map to fit)
-  MINIMAP_X = 1     # Top-left screen origin of the minimap contents
+  RADAR_RADIUS = 6 # Half-width of the player-centered minimap window (cells)
+  MINIMAP_X = 1    # Top-left screen origin of the minimap contents
   MINIMAP_Y = 2
 
   def on_create
@@ -484,44 +492,52 @@ class CommandLineFPS < RichEngine::Game
     MAP[x * MAP_WIDTH + y] == "#"
   end
 
-  # A compact, downsampled overview of the map tucked in the top-left corner.
+  # A player-centered radar: a small window of the map that scrolls with you,
+  # drawn 1:1 so walls and doorways stay crisp. North stays up.
   def draw_map
     draw_minimap_frame
 
-    (0...MAP_HEIGHT).step(MINIMAP_SCALE) do |row|
-      (0...MAP_WIDTH).step(MINIMAP_SCALE) do |col|
-        glyph = block_wall?(row, col) ? "█".fg(:bright_white) : "·".fg(:bright_black)
-        plot_minimap(row, col, glyph)
+    px = @player_x.to_i
+    py = @player_y.to_i
+
+    (-RADAR_RADIUS..RADAR_RADIUS).each do |dr|
+      (-RADAR_RADIUS..RADAR_RADIUS).each do |dc|
+        plot_radar(dr, dc, radar_glyph(px + dr, py + dc))
       end
     end
 
-    # Targets flash on the minimap only for the opening few seconds.
-    if @clock.get > TIME_LIMIT - REVEAL_TIME
-      @targets.each { |t| plot_minimap(t.x.to_i, t.y.to_i, "◎".fg(:bright_red)) }
+    # Targets blip on the radar whenever they come within range.
+    @targets.each do |t|
+      dr = t.x.to_i - px
+      dc = t.y.to_i - py
+      next if dr.abs > RADAR_RADIUS || dc.abs > RADAR_RADIUS
+      plot_radar(dr, dc, "◎".fg(:bright_red))
     end
 
-    plot_minimap(@player_x.to_i, @player_y.to_i, player_arrow.fg(:bright_yellow))
+    plot_radar(0, 0, player_arrow.fg(:bright_yellow)) # Player is always centered
   end
 
-  # True if any map cell in the MINIMAP_SCALE-square block is a wall, so the
-  # thin dividers survive the downsample (1-cell doorways may close up, which
-  # is fine for an at-a-glance overview).
-  def block_wall?(row, col)
-    (row...(row + MINIMAP_SCALE)).any? do |r|
-      (col...(col + MINIMAP_SCALE)).any? { |c| wall?(r, c) }
+  def radar_glyph(row, col)
+    if row < 0 || row >= MAP_HEIGHT || col < 0 || col >= MAP_WIDTH
+      "█".fg(:bright_black) # Outside the map
+    elsif wall?(row, col)
+      "█".fg(:bright_white)
+    else
+      "·".fg(:bright_black)
     end
   end
 
-  # Plot one map cell (row, col) onto its downsampled minimap position.
-  def plot_minimap(row, col, glyph)
-    @canvas[col / MINIMAP_SCALE + MINIMAP_X, row / MINIMAP_SCALE + MINIMAP_Y] = glyph
+  # Plot a map cell at offset (dr, dc) from the player onto the radar window.
+  def plot_radar(dr, dc, glyph)
+    @canvas[MINIMAP_X + dc + RADAR_RADIUS, MINIMAP_Y + dr + RADAR_RADIUS] = glyph
   end
 
   def draw_minimap_frame
+    size = 2 * RADAR_RADIUS + 1
     left = MINIMAP_X - 1
-    right = MINIMAP_X + MAP_WIDTH / MINIMAP_SCALE
+    right = MINIMAP_X + size
     top = MINIMAP_Y - 1
-    bottom = MINIMAP_Y + MAP_HEIGHT / MINIMAP_SCALE
+    bottom = MINIMAP_Y + size
     color = :bright_black
 
     (left..right).each do |x|
@@ -563,7 +579,7 @@ class CommandLineFPS < RichEngine::Game
     cy = @height / 2
     @canvas.write_string("TARGET RANGE", x: :center, y: cy - 4, fg: :bright_green)
     @canvas.write_string("Hunt down all #{TARGET_POSITIONS.size} targets in #{TIME_LIMIT.to_i} seconds.", x: :center, y: cy - 1, fg: :bright_white)
-    @canvas.write_string("They flash on the minimap for the first #{REVEAL_TIME.to_i}s — then you're on your own.", x: :center, y: cy + 1, fg: :bright_white)
+    @canvas.write_string("They blip on the radar when you get close. Go hunt them down.", x: :center, y: cy + 1, fg: :bright_white)
     @canvas.write_string("W/S move    A/D turn    SPACE fire", x: :center, y: cy + 3, fg: :bright_yellow)
     @canvas.write_string("Press any key to begin", x: :center, y: cy + 5, fg: :bright_white)
   end
