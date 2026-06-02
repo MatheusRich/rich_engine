@@ -144,7 +144,7 @@ class CommandLineFPS < RichEngine::Game
   FOV = Math::PI / 4.0   # Field of view
   DEPTH = 16.0           # Maximum rendering distance
   SPEED = 5.0            # Walking speed
-  TIME_LIMIT = 60.0      # Seconds to clear every target
+  TIME_LIMIT = 90.0      # Seconds to clear every target
 
   BULLET_SPEED = 8.0     # Fireball travel speed (units/second)
   BULLET_RANGE = 6.0     # How far a fireball flies before fizzling out
