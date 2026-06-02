@@ -48,7 +48,7 @@ module RichEngine
       end
 
       if y == :center
-        y = (@height - str.length) / 2
+        y = (@height - 1) / 2
       end
 
       fg = Array(fg).cycle
