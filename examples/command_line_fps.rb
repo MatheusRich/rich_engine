@@ -156,15 +156,8 @@ class CommandLineFPS < RichEngine::Game
   TARGET_SPRITE = Sprite.bullseye(3)
   FIREBALL_SPRITE = Sprite.fireball(2)
 
-  # One target tucked in each of the six outer rooms (player starts in the center).
-  TARGET_POSITIONS = [
-    [3.5, 3.5],    # top-left room
-    [3.5, 26.5],   # top-right room
-    [15.5, 4.5],   # left-middle room
-    [15.5, 27.5],  # right-middle room
-    [28.5, 3.5],   # bottom-left room
-    [28.5, 28.5]   # bottom-right room
-  ].freeze
+  NUM_TARGETS = 6       # Targets scattered each round
+  MIN_SEPARATION = 5.0  # Min distance between targets and from the player spawn
 
   # Wall texture/brightness ramp, nearest -> farthest.
   WALLS = [
@@ -219,18 +212,48 @@ class CommandLineFPS < RichEngine::Game
   private
 
   def reset_game
-    @player_x = 15.5   # Player start position (center room)
-    @player_y = 15.5
-    @player_a = 0.0    # Player start rotation
+    spawn_player
     @fps = 0.0
     @state = :playing
 
-    @targets = TARGET_POSITIONS.map { |x, y| Target.new(x, y) }
+    @targets = spawn_targets
+    @target_count = @targets.size # Frozen total for the HUD/result screens
     @fireballs = []
     @hits = 0
     @fire_cooldown = RichEngine::Cooldown.new(FIRE_COOLDOWN)
     @clock = RichEngine::Cooldown.new(TIME_LIMIT) # Counts down to zero
     @depth_buffer = Array.new(@width, DEPTH)      # Wall distance per screen column
+  end
+
+  # Drop the player on a random open cell, facing a random direction.
+  def spawn_player
+    row, col = open_cells.sample
+    @player_x = row + 0.5
+    @player_y = col + 0.5
+    @player_a = rand * 2 * Math::PI
+  end
+
+  # Scatter NUM_TARGETS across random open cells, keeping them spread out and
+  # clear of the player's spawn.
+  def spawn_targets
+    chosen = []
+    open_cells.shuffle.each do |row, col|
+      x = row + 0.5
+      y = col + 0.5
+      next if Math.hypot(x - @player_x, y - @player_y) < MIN_SEPARATION
+      next if chosen.any? { |t| Math.hypot(t.x - x, t.y - y) < MIN_SEPARATION }
+
+      chosen << Target.new(x, y)
+      break if chosen.size >= NUM_TARGETS
+    end
+    chosen
+  end
+
+  # Every walkable (non-wall) cell as [row, col]; the map never changes.
+  def open_cells
+    @open_cells ||= (0...MAP_HEIGHT).flat_map do |row|
+      (0...MAP_WIDTH).filter_map { |col| [row, col] unless wall?(row, col) }
+    end
   end
 
   def play_frame(elapsed_time, key)
@@ -589,7 +612,7 @@ class CommandLineFPS < RichEngine::Game
   def draw_intro
     cy = @height / 2
     @canvas.write_string("TARGET RANGE", x: :center, y: cy - 4, fg: :bright_green)
-    @canvas.write_string("Hunt down all #{TARGET_POSITIONS.size} targets in #{TIME_LIMIT.to_i} seconds.", x: :center, y: cy - 1, fg: :bright_white)
+    @canvas.write_string("Hunt down all #{@target_count} targets in #{TIME_LIMIT.to_i} seconds.", x: :center, y: cy - 1, fg: :bright_white)
     @canvas.write_string("They blip on the radar when you get close. Go hunt them down.", x: :center, y: cy + 1, fg: :bright_white)
     @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire", x: :center, y: cy + 3, fg: :bright_yellow)
     @canvas.write_string("Press any key to begin", x: :center, y: cy + 5, fg: :bright_white)
@@ -603,7 +626,7 @@ class CommandLineFPS < RichEngine::Game
     else
       headline = "TIME'S UP!"
       headline_color = :bright_red
-      detail = "Hits #{@hits}/#{TARGET_POSITIONS.size}"
+      detail = "Hits #{@hits}/#{@target_count}"
     end
 
     @canvas.write_string(headline, x: :center, y: @height / 2 - 2, fg: headline_color)
