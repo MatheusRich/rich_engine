@@ -55,7 +55,7 @@ module RichEngine
       return :cache_hit if canvas == @canvas_cache
 
       yield
-      @canvas_cache = canvas
+      @canvas_cache = canvas.dup # Snapshot by value; the game may mutate the array in place
 
       :cache_miss
     end
