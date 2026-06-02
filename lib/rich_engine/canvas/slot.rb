@@ -29,7 +29,7 @@ module RichEngine
       def clear
         fill_char = @bg || @parent.bg
         each_coord do |x, y|
-          @parent[@offset_x + x, @offset_y + y] = fill_char
+          self[x, y] = fill_char
         end
       end
 
