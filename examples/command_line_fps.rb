@@ -268,9 +268,20 @@ class CommandLineFPS < RichEngine::Game
       dx = Math.sin(@player_a) * SPEED * elapsed_time
       dy = Math.cos(@player_a) * SPEED * elapsed_time
       move(-dx, -dy)
+    when :q # Strafe left
+      strafe(-1, elapsed_time)
+    when :e # Strafe right
+      strafe(1, elapsed_time)
     when :space
       fire! if @fire_cooldown.ready?
     end
+  end
+
+  # Sidestep perpendicular to the facing direction. +1 is right, -1 is left.
+  def strafe(direction, elapsed_time)
+    dx = Math.cos(@player_a) * SPEED * elapsed_time * direction
+    dy = -Math.sin(@player_a) * SPEED * elapsed_time * direction
+    move(dx, dy)
   end
 
   def move(dx, dy)
@@ -572,7 +583,7 @@ class CommandLineFPS < RichEngine::Game
     time_color = remaining <= 10 ? :bright_red : :bright_white
     @canvas.write_string(format("TIME %4.1f", remaining), x: 0, y: 0, fg: time_color)
     @canvas.write_string("HITS #{@hits}  LEFT #{@targets.size}", x: @width - 16, y: 0, fg: :bright_yellow)
-    @canvas.write_string("W/S move   A/D turn   SPACE fire   ESC quit", x: 0, y: @height - 1, fg: :bright_black)
+    @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire   ESC quit", x: 0, y: @height - 1, fg: :bright_black)
   end
 
   def draw_intro
@@ -580,7 +591,7 @@ class CommandLineFPS < RichEngine::Game
     @canvas.write_string("TARGET RANGE", x: :center, y: cy - 4, fg: :bright_green)
     @canvas.write_string("Hunt down all #{TARGET_POSITIONS.size} targets in #{TIME_LIMIT.to_i} seconds.", x: :center, y: cy - 1, fg: :bright_white)
     @canvas.write_string("They blip on the radar when you get close. Go hunt them down.", x: :center, y: cy + 1, fg: :bright_white)
-    @canvas.write_string("W/S move    A/D turn    SPACE fire", x: :center, y: cy + 3, fg: :bright_yellow)
+    @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire", x: :center, y: cy + 3, fg: :bright_yellow)
     @canvas.write_string("Press any key to begin", x: :center, y: cy + 5, fg: :bright_white)
   end
 
