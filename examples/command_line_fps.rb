@@ -1,24 +1,11 @@
 # frozen_string_literal: true
 
-# A port of javidx9's (OneLoneCoder) CommandLineFPS raycaster, growing toward
-# the "v2" feature set (depth-buffered billboard sprites + shooting):
-# https://github.com/OneLoneCoder/CommandLineFPS/blob/master/CommandLineFPS.cpp
-#
-# Controls:
-#   W / S    move forwards / backwards
-#   A / D    rotate counter-clockwise / clockwise
-#   SPACE    fire a fireball
-#   Q        quit
-#
-# Note: the original uses GetAsyncKeyState, so it can read several held keys at
-# once (e.g. walk and turn together). This engine delivers a single key per
-# frame, so movement is one action per frame and relies on terminal key-repeat
-# for continuous motion. An aim-then-shoot range plays fine within that limit.
+# Inspired by javidx9's CommandLineFPS raycaster (@OneLoneCoder).
 
 require "rich_engine"
 
-# A tiny billboard sprite: a grid of glyphs with a parallel grid of colors,
-# sampled by normalized (0..1) coordinates so it can be scaled to any size.
+# A billboard sprite: a grid of glyphs with a parallel grid of colors, sampled
+# by normalized (0..1) coordinates so it can be scaled to any size.
 class Sprite
   using RichEngine::StringColors
 
@@ -31,8 +18,6 @@ class Sprite
     @width = glyphs.first.size
   end
 
-  # Returns a colored 1-char string for the given normalized coords, or nil
-  # where the sprite is transparent (so the world shows through).
   def sample(sample_x, sample_y)
     gx = clamp((sample_x * @width).to_i, @width)
     gy = clamp((sample_y * @height).to_i, @height)
@@ -225,7 +210,6 @@ class CommandLineFPS < RichEngine::Game
     @depth_buffer = Array.new(@width, DEPTH)      # Wall distance per screen column
   end
 
-  # Drop the player on a random open cell, facing a random direction.
   def spawn_player
     row, col = open_cells.sample
     @player_x = row + 0.5
@@ -233,8 +217,6 @@ class CommandLineFPS < RichEngine::Game
     @player_a = rand * 2 * Math::PI
   end
 
-  # Scatter NUM_TARGETS across random open cells, keeping them spread out and
-  # clear of the player's spawn.
   def spawn_targets
     chosen = []
     open_cells.shuffle.each do |row, col|
@@ -249,7 +231,6 @@ class CommandLineFPS < RichEngine::Game
     chosen
   end
 
-  # Every walkable (non-wall) cell as [row, col]; the map never changes.
   def open_cells
     @open_cells ||= (0...MAP_HEIGHT).flat_map do |row|
       (0...MAP_WIDTH).filter_map { |col| [row, col] unless wall?(row, col) }
@@ -264,8 +245,8 @@ class CommandLineFPS < RichEngine::Game
     handle_input(key, elapsed_time)
     update_fireballs(elapsed_time)
 
-    render_world  # Draws sky/walls/floor and fills the depth buffer
-    draw_objects  # Billboards targets & fireballs, occluded by the depth buffer
+    render_world
+    draw_objects
     draw_map
     draw_crosshair
     draw_hud
@@ -318,7 +299,7 @@ class CommandLineFPS < RichEngine::Game
   end
 
   def fire!
-    # Aim where the player faces, with a little spread (à la v2).
+    # Aim where the player faces, with a little spread.
     angle = @player_a + (rand - 0.5) * 0.1
     @fireballs << Fireball.new(
       @player_x, @player_y,
@@ -606,6 +587,7 @@ class CommandLineFPS < RichEngine::Game
     time_color = remaining <= 10 ? :bright_red : :bright_white
     @canvas.write_string(format("TIME %4.1f", remaining), x: 0, y: 0, fg: time_color)
     @canvas.write_string("HITS #{@hits}  LEFT #{@targets.size}", x: @width - 16, y: 0, fg: :bright_yellow)
+    @canvas.write_string(format("FPS %3.0f", @fps), x: @width - 16, y: 1, fg: :bright_black)
     @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire   ESC quit", x: 0, y: @height - 1, fg: :bright_black)
   end
 
