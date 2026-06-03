@@ -12,18 +12,23 @@ module RichEngine
       red: 160,
       green: 40,
       yellow: 184,
+      orange: 208,
       blue: 20,
       magenta: 164,
       cyan: 44,
-      white: 188,
-      bright_black: 244,
+      white: 231,
+      dark_gray: 238,
+      dark_grey: 238,
+      gray: 244,
+      grey: 244,
+      light_gray: 188,
+      light_grey: 188,
       bright_red: 196,
       bright_green: 46,
       bright_yellow: 226,
       bright_blue: 21,
       bright_magenta: 201,
-      bright_cyan: 51,
-      bright_white: 231
+      bright_cyan: 51
     }.freeze
 
     # Channel intensities used by the 6x6x6 color cube.

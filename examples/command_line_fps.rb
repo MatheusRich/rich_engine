@@ -41,7 +41,7 @@ class Sprite
         colors[row][col] =
           if ring.zero? then :bright_yellow # Bull
           elsif ring.odd? then :bright_red
-          else :bright_white
+          else :white
           end
       end
     end
@@ -146,10 +146,10 @@ class CommandLineFPS < RichEngine::Game
 
   # Wall texture/brightness ramp, nearest -> farthest.
   WALLS = [
-    "█".fg(:bright_white),
-    "▓".fg(:white),
-    "▒".fg(:white),
-    "░".fg(:bright_black)
+    "█".fg(:white),
+    "▓".fg(:light_gray),
+    "▒".fg(:light_gray),
+    "░".fg(:gray)
   ].freeze
 
   # Sky gradient, top of screen -> horizon.
@@ -164,7 +164,7 @@ class CommandLineFPS < RichEngine::Game
     "▓".fg(:green),
     "▒".fg(:green),
     "░".fg(:green),
-    "░".fg(:bright_black)
+    "░".fg(:gray)
   ].freeze
 
   # Player facing indicator on the minimap, indexed clockwise from east.
@@ -534,11 +534,11 @@ class CommandLineFPS < RichEngine::Game
 
   def radar_glyph(row, col)
     if row < 0 || row >= MAP_HEIGHT || col < 0 || col >= MAP_WIDTH
-      "█".fg(:bright_black) # Outside the map
+      "█".fg(:gray) # Outside the map
     elsif wall?(row, col)
-      "█".fg(:bright_white)
+      "█".fg(:white)
     else
-      "·".fg(:bright_black)
+      "·".fg(:gray)
     end
   end
 
@@ -553,7 +553,7 @@ class CommandLineFPS < RichEngine::Game
     right = MINIMAP_X + size
     top = MINIMAP_Y - 1
     bottom = MINIMAP_Y + size
-    color = :bright_black
+    color = :gray
 
     (left..right).each do |x|
       @canvas[x, top] = "─".fg(color)
@@ -584,20 +584,20 @@ class CommandLineFPS < RichEngine::Game
 
   def draw_hud
     remaining = [@clock.get, 0.0].max
-    time_color = remaining <= 10 ? :bright_red : :bright_white
+    time_color = remaining <= 10 ? :bright_red : :white
     @canvas.write_string(format("TIME %4.1f", remaining), x: 0, y: 0, fg: time_color)
     @canvas.write_string("HITS #{@hits}  LEFT #{@targets.size}", x: @width - 16, y: 0, fg: :bright_yellow)
-    @canvas.write_string(format("FPS %3.0f", @fps), x: @width - 16, y: 1, fg: :bright_black)
-    @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire   ESC quit", x: 0, y: @height - 1, fg: :bright_black)
+    @canvas.write_string(format("FPS %3.0f", @fps), x: @width - 16, y: 1, fg: :gray)
+    @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire   ESC quit", x: 0, y: @height - 1, fg: :gray)
   end
 
   def draw_intro
     cy = @height / 2
     @canvas.write_string("TARGET RANGE", x: :center, y: cy - 4, fg: :bright_green)
-    @canvas.write_string("Hunt down all #{@target_count} targets in #{TIME_LIMIT.to_i} seconds.", x: :center, y: cy - 1, fg: :bright_white)
-    @canvas.write_string("They blip on the radar when you get close. Go hunt them down.", x: :center, y: cy + 1, fg: :bright_white)
+    @canvas.write_string("Hunt down all #{@target_count} targets in #{TIME_LIMIT.to_i} seconds.", x: :center, y: cy - 1, fg: :white)
+    @canvas.write_string("They blip on the radar when you get close. Go hunt them down.", x: :center, y: cy + 1, fg: :white)
     @canvas.write_string("W/S move   A/D turn   Q/E strafe   SPACE fire", x: :center, y: cy + 3, fg: :bright_yellow)
-    @canvas.write_string("Press any key to begin", x: :center, y: cy + 5, fg: :bright_white)
+    @canvas.write_string("Press any key to begin", x: :center, y: cy + 5, fg: :white)
   end
 
   def draw_result
@@ -612,8 +612,8 @@ class CommandLineFPS < RichEngine::Game
     end
 
     @canvas.write_string(headline, x: :center, y: @height / 2 - 2, fg: headline_color)
-    @canvas.write_string(detail, x: :center, y: @height / 2, fg: :bright_white)
-    @canvas.write_string("Press R to play again   ESC to quit", x: :center, y: @height / 2 + 2, fg: :bright_white)
+    @canvas.write_string(detail, x: :center, y: @height / 2, fg: :white)
+    @canvas.write_string("Press R to play again   ESC to quit", x: :center, y: @height / 2 + 2, fg: :white)
   end
 end
 

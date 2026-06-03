@@ -34,7 +34,7 @@ class MyGame < RichEngine::Game
     @player_x = 2
     @player_y = field_height / 2
     @timer = RichEngine::Cooldown.new(5.0)
-    @field = @canvas.slot(x: 0, y: 0, width: @width, height: field_height, bg: RichEngine::UI::Textures.solid.bright_white)
+    @field = @canvas.slot(x: 0, y: 0, width: @width, height: field_height, bg: RichEngine::UI::Textures.solid.white)
     @hud   = @canvas.slot(x: 0, y: field_height, width: @width, height: HUD_HEIGHT)
     spawn_item
   end

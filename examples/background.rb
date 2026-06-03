@@ -73,7 +73,7 @@ class Cloud
   def initialize(x: -rand(5..300))
     @x = x
     @y = rand(0..4)
-    @color = [:white, :bright_white].sample
+    @color = [:light_gray, :white].sample
     @sprite = cloud_sprites.sample
     @speed = rand(1..10)
   end
