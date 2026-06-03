@@ -115,7 +115,7 @@ Notes
 ## Canvas essentials
 
 `@canvas` exposes a few handy methods:
-- `write_string(str, x:, y:, fg: :white, bg: :transparent)` — write colored text; pass a single color or an array (arrays will cycle per character)
+- `write_string(str, x:, y:, fg: :white, bg: :transparent)` — write colored text; pass a single color (named symbol or hex string) or an array of colors (arrays will cycle per character)
 - `draw_rect(x:, y:, width:, height:, char: "█", color: :white)` — draw a filled rectangle
 - `draw_circle(x:, y:, radius:, char: "█", color: :white)` — draw a filled circle
 - `draw_sprite(sprite, x: 0, y: 0, fg: :white)` — draw a multi-line string as a sprite; spaces are transparent
@@ -136,6 +136,22 @@ log.write_string("Hello", x: 1, y: 1)  # writes to (81, 1) on the parent canvas
 ```
 
 Colors are provided via a refinement used internally by the canvas. For text, prefer the `fg:` and `bg:` options on `write_string`.
+
+### Colors
+
+Colors are emitted as 256-color escape sequences using only the theme-independent
+regions of the palette, so they look the same in every terminal regardless of the
+user's color scheme. Anywhere a color is accepted (`fg:`, `bg:`, `color:`), you
+can pass:
+
+- a named color: `:red`, `:bright_cyan`, etc. (see `RichEngine::StringColors::PALETTE`)
+- a hex string: `"#ff8800"` (also `"ff8800"` and shorthand `"#f80"`)
+- an RGB array: `[255, 136, 0]`
+- a raw 256-color index: `208`
+
+Hex and RGB values snap to the nearest color in the fixed 256-color palette.
+Note: `write_string` treats arrays as per-character color cycles, so use hex
+strings for custom colors there.
 
 ## Animations
 
