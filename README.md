@@ -153,6 +153,15 @@ Hex and RGB values snap to the nearest color in the fixed 256-color palette.
 Note: `write_string` treats arrays as per-character color cycles, so use hex
 strings for custom colors there.
 
+`RichEngine::StringColors.contrast_color(color)` returns `:black` or `:white`,
+whichever reads better on top of the given color (like CSS's `contrast-color()`
+function). Handy for labels on dynamic backgrounds:
+
+```ruby
+label_color = RichEngine::StringColors.contrast_color(bg_color)
+@canvas.write_string("Score: 10", x: 0, y: 0, fg: label_color, bg: bg_color)
+```
+
 ## Animations
 
 `RichEngine::Animation` plays a sequence of string frames (sprites) at a fixed frames-per-second. Each frame is a multi-line string; spaces are treated as transparency by `Canvas#draw_sprite`.

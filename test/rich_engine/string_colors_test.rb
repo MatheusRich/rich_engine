@@ -50,4 +50,21 @@ class StringColorsTest < Minitest::Test
     assert_raises(KeyError) { "x".fg(:not_a_color) }
     assert_raises(ArgumentError) { "x".fg(1.5) }
   end
+
+  def test_contrast_color_picks_black_or_white_by_wcag_contrast
+    assert_equal :black, RichEngine::StringColors.contrast_color(:yellow)
+    assert_equal :black, RichEngine::StringColors.contrast_color(:white)
+    assert_equal :white, RichEngine::StringColors.contrast_color(:blue)
+    assert_equal :white, RichEngine::StringColors.contrast_color(:black)
+  end
+
+  def test_contrast_color_accepts_every_color_format
+    assert_equal :black, RichEngine::StringColors.contrast_color("#ff8800")
+    assert_equal :white, RichEngine::StringColors.contrast_color([0, 0, 215])
+    assert_equal :black, RichEngine::StringColors.contrast_color(208)
+  end
+
+  def test_contrast_color_rejects_theme_dependent_indices
+    assert_raises(ArgumentError) { RichEngine::StringColors.contrast_color(9) }
+  end
 end

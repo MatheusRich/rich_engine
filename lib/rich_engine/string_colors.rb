@@ -52,6 +52,55 @@ module RichEngine
       end
     end
 
+    # Returns :black or :white, whichever has the higher WCAG contrast ratio
+    # against the given color, like CSS's contrast-color() function. Ties go
+    # to :white. Accepts the same color specs as fg/bg.
+    #
+    #   contrast_color(:yellow)   # => :black
+    #   contrast_color("#0000d7") # => :white
+    #
+    def self.contrast_color(color)
+      luminance = relative_luminance(rgb_for(color))
+      white_contrast = 1.05 / (luminance + 0.05)
+      black_contrast = (luminance + 0.05) / 0.05
+
+      white_contrast >= black_contrast ? :white : :black
+    end
+
+    def self.rgb_for(color)
+      case color
+      when Symbol then index_to_rgb(PALETTE.fetch(color))
+      when Integer then index_to_rgb(color)
+      when Array then color
+      when String then hex_to_rgb(color)
+      else
+        raise ArgumentError, "invalid color: #{color.inspect}"
+      end
+    end
+
+    def self.index_to_rgb(index)
+      if index.between?(16, 231)
+        cube = index - 16
+        [cube / 36, (cube % 36) / 6, cube % 6].map { |level| CUBE_LEVELS[level] }
+      elsif index.between?(232, 255)
+        level = 8 + (10 * (index - 232))
+        [level, level, level]
+      else
+        raise ArgumentError, "color index #{index} is theme-dependent; use 16-255"
+      end
+    end
+
+    # WCAG 2 relative luminance of an sRGB color, from 0.0 (black) to 1.0
+    # (white). See https://www.w3.org/TR/WCAG20/#relativeluminancedef
+    def self.relative_luminance(rgb)
+      r, g, b = rgb.map do |channel|
+        value = channel / 255.0
+        value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055)**2.4
+      end
+
+      (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+    end
+
     def self.hex_to_rgb(hex)
       digits = hex.delete_prefix("#")
       digits = digits.each_char.map { |c| c * 2 }.join if digits.length == 3
