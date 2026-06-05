@@ -7,6 +7,7 @@ gemspec
 group :development do
   gem "standardrb"
   gem "solargraph"
+  gem "yard", require: false
 end
 
 group :test do

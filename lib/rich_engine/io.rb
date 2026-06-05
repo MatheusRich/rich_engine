@@ -5,15 +5,30 @@ require "io/console"
 require "stringio"
 
 module RichEngine
+  # Internal plumbing that bridges {Game} and the terminal: it flushes the
+  # canvas to $stdout (with render caching) and reads non-blocking keyboard
+  # input, translating escape sequences into key symbols.
+  #
+  # @api private
   class IO
     Signal.trap("INT") { raise Game::Exit }
 
+    # @param width [Integer] the screen width in characters
+    # @param height [Integer] the screen height in characters
     def initialize(width, height)
       @screen_width = width
       @screen_height = height
       delete_cache
     end
 
+    # Renders the canvas to $stdout, skipping the write when the canvas is
+    # unchanged since the last frame.
+    #
+    # @param canvas [Array] the flat array of canvas cells to draw
+    # @param use_caching [Boolean] when false, the render cache is dropped so
+    #   the canvas is always redrawn
+    # @return [Symbol] :cache_hit when the frame was skipped, :cache_miss
+    #   otherwise
     def write(canvas, use_caching:)
       delete_cache unless use_caching
 
@@ -24,6 +39,11 @@ module RichEngine
       end
     end
 
+    # Reads a single keypress without blocking, decoding multi-byte escape
+    # sequences (arrows, page keys, etc.) into key symbols.
+    #
+    # @return [Symbol, nil] the key pressed (e.g. :q, :up, :space, :esc), or
+    #   nil if no input was waiting
     def read_async
       $stdin.raw do |io|
         key = $stdin.read_nonblock(2)

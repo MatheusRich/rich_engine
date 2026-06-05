@@ -4,8 +4,16 @@ require_relative "canvas"
 require_relative "io"
 
 module RichEngine
-  # Example:
+  # The base class for all games. Subclass it, implement the lifecycle hooks,
+  # and draw to `@canvas` each frame; the game loop, input, rendering, and
+  # frame pacing are handled for you.
   #
+  # The lifecycle hooks are the core public API:
+  # - {#on_create} runs once at start
+  # - {#on_update} runs every frame
+  # - {#on_destroy} runs when the game exits
+  #
+  # @example A minimal game that draws a title and quits on "q"
   #   class MyGame < RichEngine::Game
   #     def on_create
   #       @title = "My Awesome Game"
@@ -19,10 +27,17 @@ module RichEngine
   #   end
   #
   #   MyGame.play
-  #
   class Game
+    # Raised internally to break out of the game loop. Use {#quit!} instead of
+    # raising this directly.
+    #
+    # @api private
     class Exit < StandardError; end
 
+    # @param width [Integer] the screen width in characters
+    # @param height [Integer] the screen height in characters
+    # @param target_fps [Integer, nil] target frames per second; pass nil to
+    #   run uncapped without frame pacing
     def initialize(width, height, target_fps: 60)
       @width = width
       @height = height
@@ -33,10 +48,23 @@ module RichEngine
       @canvas = RichEngine::Canvas.new(width, height)
     end
 
+    # Builds a game and runs it. The convenient entry point for starting a
+    # game.
+    #
+    # @param width [Integer] the screen width in characters
+    # @param height [Integer] the screen height in characters
+    # @param target_fps [Integer, nil] target frames per second; pass nil to
+    #   run uncapped without frame pacing
+    # @return [void]
     def self.play(width: 50, height: 10, target_fps: 60)
       new(width, height, target_fps: target_fps).play
     end
 
+    # Runs the game: prepares the terminal, calls {#on_create}, then loops
+    # calling {#on_update} and rendering every frame until the game exits,
+    # finally calling {#on_destroy} and restoring the terminal.
+    #
+    # @return [void]
     def play
       prepare_screen
       on_create
@@ -58,19 +86,44 @@ module RichEngine
       restore_screen
     end
 
+    # Lifecycle hook called once before the game loop starts. Override it to
+    # set up initial state (instance variables, timers, canvas slots, etc.).
+    #
+    # @return [void]
     def on_create
     end
 
+    # Lifecycle hook called once per frame. Override it to update game state
+    # and draw to `@canvas`.
+    #
+    # @param _elapsed_time [Float] seconds elapsed since the last frame
+    # @param _key [Symbol, nil] the last key pressed (e.g. :q, :up, :space,
+    #   :esc), or nil if no key was pressed this frame
+    # @return [void]
     def on_update(_elapsed_time, _key)
     end
 
+    # Lifecycle hook called once after the game loop ends. Override it to tear
+    # down state or print a final message.
+    #
+    # @return [void]
     def on_destroy
     end
 
+    # Exits the game loop, triggering {#on_destroy} and terminal restore.
+    #
+    # @return [void]
+    # @raise [Exit] always, to unwind out of the loop
     def quit!
       raise Exit
     end
 
+    # Runs a single frame: reads input, calls {#on_update}, renders, and
+    # sleeps to honor the target FPS.
+    #
+    # @param elapsed_time [Float] seconds elapsed since the last frame
+    # @return [void]
+    # @api private
     def game_loop(elapsed_time)
       key = read_input
       on_update(elapsed_time, key)
