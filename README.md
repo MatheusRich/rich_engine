@@ -8,6 +8,10 @@ playful ASCII games quickly.
 At its core, you subclass `RichEngine::Game`, implement a few lifecycle hooks,
 and draw to a `Canvas` each frame.
 
+This README is a tour. For method-by-method reference, see the
+[API docs](https://rubydoc.info/gems/rich_engine) (or run
+`bundle exec yard server` locally).
+
 ## Quick start: build a simple game
 
 Below is a minimal, complete example showing how to:
@@ -107,21 +111,14 @@ Notes
   - `on_update(elapsed_time, key)` runs every frame
   - `on_destroy` runs when the game exits.
 - Keys: letters are symbols (e.g., `:q`), plus arrows (`:up`, `:down`, `:left`, `:right`), `:space`, `:enter`, `:esc`, `:pg_up`, `:pg_down`, `:home`, `:end`.
-- Drawing: all drawing happens on `@canvas`. Call `@canvas.clear` each frame if you want to redraw from scratch.
+- Drawing: all drawing happens on `@canvas`, via `write_string`, `draw_rect`,
+  `draw_circle`, and `draw_sprite`. Call `@canvas.clear` each frame if you want
+  to redraw from scratch.
 - Rendering and frame pacing are handled for you:
   - `Game` flushes the canvas after each frame
   - `Game` auto-sleeps to hit your target FPS (60 by default, but configurable via `target_fps:` on `Game.play`)
 
-## Canvas essentials
-
-`@canvas` exposes a few handy methods:
-- `write_string(str, x:, y:, fg: :white, bg: :transparent)` — write colored text; pass a single color (named symbol or hex string) or an array of colors (arrays will cycle per character)
-- `draw_rect(x:, y:, width:, height:, char: "█", color: :white)` — draw a filled rectangle
-- `draw_circle(x:, y:, radius:, char: "█", color: :white)` — draw a filled circle
-- `draw_sprite(sprite, x: 0, y: 0, fg: :white)` — draw a multi-line string as a sprite; spaces are transparent
-- `clear` — clear the entire canvas; `bg=` changes the background fill character and clears
-
-### Canvas slots (sub-canvases)
+## Canvas slots (sub-canvases)
 
 Slots are sub-regions of a canvas that translate local coordinates and clip drawing automatically. Great for HUDs and side panels.
 
@@ -135,9 +132,7 @@ log = canvas.slot(x: 80, y: 0, width: 20, height: 35)
 log.write_string("Hello", x: 1, y: 1)  # writes to (81, 1) on the parent canvas
 ```
 
-Colors are provided via a refinement used internally by the canvas. For text, prefer the `fg:` and `bg:` options on `write_string`.
-
-### Colors
+## Colors
 
 Colors are emitted as 256-color escape sequences using only the theme-independent
 regions of the palette, so they look the same in every terminal regardless of the
@@ -155,18 +150,17 @@ strings for custom colors there.
 
 `RichEngine::StringColors.contrast_color(color)` returns `:black` or `:white`,
 whichever reads better on top of the given color (like CSS's `contrast-color()`
-function). Handy for labels on dynamic backgrounds:
+function). Handy for labels on dynamic backgrounds.
 
-```ruby
-label_color = RichEngine::StringColors.contrast_color(bg_color)
-@canvas.write_string("Score: 10", x: 0, y: 0, fg: label_color, bg: bg_color)
-```
+To color strings directly (outside of canvas methods), add
+`using RichEngine::StringColors` to your class and chain away:
+`"hello".fg(:red).bg("#222222").bold`.
 
 ## Animations
 
-`RichEngine::Animation` plays a sequence of string frames (sprites) at a fixed frames-per-second. Each frame is a multi-line string; spaces are treated as transparency by `Canvas#draw_sprite`.
-
-### Quick example
+`RichEngine::Animation` plays a sequence of string frames (sprites) at a fixed
+frames-per-second. Each frame is a multi-line string; spaces are treated as
+transparency by `Canvas#draw_sprite`.
 
 ```ruby
 # frozen_string_literal: true
@@ -199,32 +193,18 @@ end
 AnimationExample.play(width: 10, height: 3, target_fps: 30)
 ```
 
-### API
-
-- Initialize: `RichEngine::Animation.new(frames:, fps: 12, loop: true, fg: :white)`
-  - `frames`: Array<String> — each string is a frame; can be multi-line. Spaces are transparent.
-  - `fps`: Integer/Float — how many frames per second to advance.
-  - `loop`: Boolean — if true, wrap to the first frame after the last; otherwise stop at the last frame.
-  - `fg`: Symbol — default foreground color when drawing.
-- Methods:
-  - `update(dt)`: advance internal timer; call once per frame with `elapsed_time`.
-  - `draw(canvas, x:, y:, fg: default)`: render current frame to the canvas.
-  - `play!`, `pause!`, `stop!`, `reset!`, `playing?`: control playback.
-  - `current_frame`: returns the current frame string.
-  - `fps=`: change playback speed at runtime.
-
-Notes
-- Frames are advanced only when enough time has elapsed per the configured `fps`.
-- When `loop: false`, the animation stops at the last frame and `playing?` becomes false.
+Playback is controlled with `play!`, `pause!`, `stop!`, `reset!`, and `fps=`.
 
 ## Helpers you can use
 
-All helpers live under `RichEngine::...` and are independent utilities you can use inside your game code.
+All helpers live under `RichEngine::...` and are independent utilities you can
+use inside your game code.
 
 ### Timer
 
-- `Timer` accumulates elapsed time; you drive it by calling `update(dt)` with the `elapsed_time` from `on_update`.
-- `Timer.every(seconds:)` returns a small scheduler that fires a block at a fixed interval.
+Accumulates elapsed time; you drive it by calling `update(dt)` with the
+`elapsed_time` from `on_update`. `Timer.every(seconds:)` returns a small
+scheduler that fires a block at a fixed interval.
 
 ```ruby
 tick = RichEngine::Timer.new
@@ -316,20 +296,8 @@ pairs = grid.zip(other) # => matrix of [left, right]
 
 ### UI::Textures
 
-Convenience glyphs for shading and blocky fills.
-
-| Glyph | Name         |
-|-------|--------------|
-| ␠     | empty        |
-| █     | solid        |
-| ▓     | light_shade  |
-| ▒     | medium_shade |
-| ░     | dark_shade   |
-| ▀     | top_half     |
-| ▄     | bottom_half  |
-| ▌     | left_half    |
-| ▐     | right_half   |
-| ▞     | plaid        |
+Convenience glyphs for shading and blocky fills: `solid` (█), the shades
+(▓ ▒ ░), half blocks, and friends.
 
 ```ruby
 @canvas.draw_rect(x: 10, y: 6, width: 8, height: 2, char: RichEngine::UI::Textures.solid, color: :magenta)
@@ -342,6 +310,7 @@ See the `examples/` folder for more complete samples:
 - `noise.rb` — colorful random output
 - `background.rb` — background fill and drawing
 - `grains_of_sand.rb` — simple cellular-like simulation
+- `command_line_fps.rb` — a raycasting FPS with a radar and target practice
 
 ## Install and run locally (optional)
 
